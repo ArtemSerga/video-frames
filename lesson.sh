@@ -98,16 +98,17 @@ frame)
 
 push)
   cd "$ROOT"
-  FILES=$(ls "$SERIES/$NUM"/[0-9][0-9]-[0-9][0-9]-[0-9][0-9].jpg 2>/dev/null || true)
-  [ -z "$FILES" ] && { echo "No frames in $DIR"; exit 1; }
+  FRAMES=$(ls "$SERIES/$NUM"/[0-9][0-9]-[0-9][0-9]-[0-9][0-9].jpg 2>/dev/null || true)
+  SUBS=$(ls "$SERIES/$NUM"/*.srt 2>/dev/null || true)
+  [ -z "$FRAMES$SUBS" ] && { echo "Nothing to commit in $DIR"; exit 1; }
 
-  git add $FILES
+  git add $FRAMES $SUBS
   git status --short
   echo
   read -p "Commit? [y/N] " OK
   [ "$OK" = "y" ] || { echo "Cancelled"; exit 0; }
 
-  git commit -m "lesson $NUM frames"
+  git commit -m "lesson $NUM frames and transcript"
   git push
   ;;
 
