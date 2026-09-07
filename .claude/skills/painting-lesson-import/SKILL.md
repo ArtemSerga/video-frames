@@ -159,6 +159,31 @@ win*.jpg
 
 **Contact sheets and windows are not.** They cannot be read back from the repository anyway — `web_fetch` returns page text, not pixels — so they can only be looked at by uploading to chat, and re-creating them is one command. Windows are additionally built around a specific moment and will be about the wrong place next time.
 
+### 5.1. Series progression strip
+
+When the user asks for a visual progression of a completed series, build **one horizontal image** in this order:
+
+`reference → final state of lesson 1 → … → final state of the penultimate lesson → finished painting`
+
+The finished painting is the final lesson's state and appears once, at the far right. Do not repeat the reference inside lesson frames.
+
+- Use one clean frame taken after each lesson's work is complete. Prefer a clean frame immediately before the video's end; do not assume the last frame already used on the lesson card shows the whole result.
+- For split-screen footage, crop every lesson frame to the canvas half only: `crop=iw/2:ih:iw/2:0`.
+- Keep all panels at the maximum common native height. Do not downscale 720 px sources merely because the supplied standalone reference is smaller; align that reference to the strip height.
+- Put every panel on the same baseline and use only a **2 px white separator** between neighbours. No wide padding, wrapping, grid, or second row.
+- Preserve chronological order numerically; shell glob order puts `10` before `2`.
+- Save the stable public artifact at the series root: `painting/SERIES/progression.jpg`.
+- Read the final JPEG from disk at full width before publishing. Verify every lesson appears once, the reference is first, the completed painting is last, and there are no hands, brushes, palettes, motion blur, duplicated reference halves, or black gaps.
+- Commit and push the image before adding it to Notion.
+- Insert it as the first block of the **series page**, followed by a divider:
+
+```markdown
+![Reference → steps 1–N−1 → finished painting](https://raw.githubusercontent.com/USER/video-frames/main/painting/SERIES/progression.jpg)
+---
+```
+
+Fetch the series page afterwards and confirm the image is the first content block. If `progression.jpg` is later overwritten, append or bump `?v=N` in Notion because Notion caches external images.
+
 ### 6. Verification against frames
 
 Once images are in hand, re-check the whole text. What usually turns out different:
