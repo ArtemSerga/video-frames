@@ -25,6 +25,10 @@ Everything below applies to both. Only who types the commands changes.
 
 **Code and commit messages in English only.** The frames repository is public and sits in the user's profile. Notion cards stay in Russian — those are private notes.
 
+**Stage bounds are exact YouTube times.** The left link is the first second of the stage, the right link is the second the stage is finished. Adjacent stages share that boundary: the end of N is the start of N+1. Do not round to a "nice" contact-sheet label, and do not start the next stage a minute later.
+
+**The end-of-stage frame is a clean canvas.** No brush, no hand, no palette, no motion blur, no camera cut. The work of that stage is fully on the canvas; the next stage has not started. If the only available second has a brush in it, keep searching the window — do not publish that frame.
+
 ---
 
 ## Procedure
@@ -101,9 +105,15 @@ text='%{pts\:hms}':x=10:y=10:fontsize=30:fontcolor=yellow:box=1:boxcolor=black@0
 scale=480:-1,tile=5x6" -frames:v 1 win.jpg -y
 ```
 
-Timecodes on the frames run **from zero of the window** — add the `-ss` value.
+Timecodes on the frames run **from zero of the window** — add the `-ss` value. **Contact-sheet labels are not exact.** The detector fires on scene change (often the hand entering), then `drawtext` prints that pts. Seeking the same number with `-ss` after `-i` can land on the palette instead of the canvas, or a few seconds earlier while the brush is still down. Lesson 11: the sheet said `00:39:15` (brush on the helix) and `00:40:20` (palette). The clean end of the conch stage was `00:40:08`, found only from a 2-second window.
 
-Pick a frame where the hand is off the canvas: usually the first seconds after a finished stroke, or just before the camera moves in.
+Pick the **first clean second after the stage is done**, before the next action starts:
+
+- Canvas fills the painted half; hand and brush are out
+- The named anatomical / tonal change of this stage is already there
+- The next stage's first stroke has not landed yet
+
+Reject and keep looking if any of these are true: brush or finger in frame, palette filling the shot, work still in progress, or the next stage already visible (hair strands over an ear that was meant to stop at the conch, and so on).
 
 ### 5. Extraction and repository
 
@@ -117,6 +127,10 @@ Frames live in a public git repository with stable addresses. Notion pulls them 
 **Extraction uses `-ss` after `-i` only.** Slow, about 15 seconds a frame, but exact. Any seek before `-i` lands on the nearest keyframe and drifts by seconds: on a lesson where the camera alternates between palette and canvas, three frames out of nine came out as the palette. A double seek does not help either — the coarse jump overshoots and the second `-ss` then counts from the wrong place.
 
 **The filename is the actual timecode of the frame**, not the one planned from the contact sheet. If the frame was taken at 31:01, the file is `00-31-01.jpg`, and the captions and links in Notion are adjusted to match. Never the other way round: a name that lies about its contents surfaces at the first re-check.
+
+**Read the extracted JPEG from disk before committing.** Notion images are not pixels; the contact sheet is not the file you just wrote. If the JPEG shows a brush, a palette, or an unfinished stage — delete it, extract a neighbouring second, read again. Only then `git add` that named file.
+
+**YouTube `t=` is that same second**, as an integer: `00:40:08` → `t=2408s`. Both ends of `from → to` get links. The right-hand `t=` equals the frame filename. The left-hand `t=` equals the previous stage's filename (or `t=0s` for the first stage).
 
 Address format:
 
@@ -151,8 +165,9 @@ Once images are in hand, re-check the whole text. What usually turns out differe
 
 - Coloured lines may be digital markup over the reference rather than paint
 - Whether there is an imprimatura or the canvas is bare
-- Stage boundaries shift by minutes
+- Stage boundaries shift by minutes — move the YouTube range with them
 - What is physically on the canvas at that moment
+- A "good enough" frame still has a brush or shows the next stage already underway
 
 Make the corrections silently. A "what the frames corrected" section has no place on the page.
 
@@ -322,7 +337,7 @@ Links in the form `https://app.notion.com/p/ID`, no dashes. SQL returns the url 
 ---
 ```
 
-Tab indentation. **The frame shows the state at the end of the segment**, not the start — the filename matches the right edge of the range.
+Tab indentation. **The frame shows the state at the end of the segment**, not the start — the filename matches the right edge of the range. The left timestamp is the start of this stage (end of the previous block, or `00:00:00`). Ranges on the card must be contiguous; a gap means the bounds were rounded.
 
 Ratio 50/50 for a full frame, 35/65 when the frame is cropped to the canvas.
 
@@ -339,13 +354,19 @@ The new block lands before the existing one, and the caption is fixed in the sam
 
 ### After writing
 
-Fetch the page and confirm: URL intact, timecodes ascending, captions matching frame filenames, no leftover sections.
+Fetch the page and confirm: URL intact, timecodes ascending **and contiguous**, each `t=` equal to its `HH:MM:SS` (hours×3600+minutes×60+seconds), captions matching frame filenames, frames linking to a file that was read from disk with a clean canvas, no leftover sections.
 
 ---
 
 ## Common mistakes
 
-Captioning a frame with the wrong timecode — check the filename against the label.
+Captioning a frame with the wrong timecode — check the filename against the label **and** against `t=` in seconds.
+
+Publishing a contact-sheet timestamp as the YouTube link without extracting and reading that second. The sheet fires on the hand; the seek may show the palette.
+
+Leaving a brush, hand, or unfinished stroke on an "end of stage" frame. Search the window until the canvas is clear and the stage is done.
+
+Leaving a gap between stages (`… → 00:39:15` then next starts `00:40:08` without updating the previous end). Shared boundary, always.
 
 Typing the video filename from memory. yt-dlp appends its own extension: `lesson.mp4` becomes `lesson.mp4.webm`. Always `ls` first.
 
