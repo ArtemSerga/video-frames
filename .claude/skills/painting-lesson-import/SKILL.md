@@ -247,6 +247,8 @@ That is what the card exists for.
 
 **Mixes:** numbered `№1`…`№5`. Ratios explicit (`D 1 : Zinc 2.5`), volumes in ml with strip length for a 4 mm nozzle (1 ml ≈ 8 cm).
 
+**A mix number inside a stage block always carries its recipe in brackets** — `Замес: №2 (Burnt Umber 3 : Cadmium Red Hue 1)`. The number alone sends the reader back up to the table, which is exactly what cannot happen with a brush in hand. The table stays as the place where volumes and values live.
+
 **Medium:** always its own line or column, even when the answer is "none" everywhere. Thirteen "none" in a row is a rule, not an empty column.
 
 ---
@@ -291,6 +293,10 @@ yt-dlp --flat-playlist --print "%(playlist_index)s %(id)s %(duration)s %(title)s
 **Colours in `ALTER COLUMN SET SELECT`** are accepted only for options that already exist. Add new ones without a colour.
 
 **`update_content` needs an exact match.** Re-read a page before editing it again. A `~` comes back escaped as `\~`.
+
+**`update_content` can take neighbouring blocks with it.** A batch of small, individually correct replacements removed everything that followed the last edited block — a heading, a transcript and three uploaded images. Nothing warns you: the call returns only the page id. So after *every* content edit, fetch the whole page and check the tail, not just the region you touched. Notion-hosted images cannot be restored through the API — `download-attachment` only reads text files this integration uploaded — so recovery means the user opening Page history.
+
+**Never leave the user's own material below your card on the same page.** Pre-existing transcripts, uploads and notes belong on a separate page linked from the card, or the card goes below them. Anything sitting after your last block is in the blast radius of the next edit.
 
 **A markdown table becomes a Notion block on write.** Its rows stop being text and `update_content` will not match them. Edit cells only after re-reading the page, against the actual `<td>` markup.
 
