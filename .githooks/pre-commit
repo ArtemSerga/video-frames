@@ -1,7 +1,7 @@
 #!/bin/sh
-BIG=$(git diff --cached --name-only | xargs -I{} sh -c 'test -f "{}" && find "{}" -size +5M' 2>/dev/null)
+BIG=$(git diff --cached --name-only | xargs -I{} sh -c 'test -f "{}" && find "{}" -size +10M' 2>/dev/null)
 if [ -n "$BIG" ]; then
-  echo "Файлы больше 5 МБ в коммите:"
+  echo "Файлы больше 10 МБ в коммите:"
   echo "$BIG"
   exit 1
 fi

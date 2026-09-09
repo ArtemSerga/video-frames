@@ -3,6 +3,9 @@
 *.mkv
 *.mp3
 *.wav
+# Short source clips for etudes (keep under 10 MB). Course lessons stay ignored.
+!painting/works/**/*.mp4
+!painting/works/**/*.webm
 .DS_Store
 contact_*.jpg
 win*.jpg

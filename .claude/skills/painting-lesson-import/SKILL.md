@@ -245,9 +245,13 @@ That is what the card exists for.
 
 **Value:** Munsell scale, 0 black, 10 white. Give a target number, not "a bit darker".
 
-**Mixes:** numbered `№1`…`№5`. Ratios explicit (`D 1 : Zinc 2.5`), volumes in ml with strip length for a 4 mm nozzle (1 ml ≈ 8 cm).
+**Mixes at the easel are three or four bases, not a numbered table.** The user mixes by eye from the families on the palette. A card that lists 12 puddles will be ignored after the first stage. Lead with the working bases (typically: dark for drawing/shadows, flesh, a colour family for the subject — iris, lips, etc.). Numbered recipes are a calibration chart: how to mix each family the first time, and what value it should hit. They are not 13 wet piles to keep alive at once.
 
-**A mix number inside a stage block always carries its recipe in brackets** — `Замес: №2 (Burnt Umber 3 : Cadmium Red Hue 1)`. The number alone sends the reader back up to the table, which is exactly what cannot happen with a brush in hand. The table stays as the place where volumes and values live.
+**What is mixed by eye from a base:** lighten with white, darken with the dark pile, warm with ochre/red, cool with a trace of the colour family. Write those as branches (`телесный + капля умбры → полутон 5`), not as new numbered mixes.
+
+**What is not a branch.** A few spots have their own puddle and must not be mixed from the three bases: the highlight (pure Titanium, last, on a dry surface) and, in an eye, the sclera (Zinc + umber to a neutral grey). Mixing those from flesh or from the blue pile is how they go chalky or sky-blue.
+
+**A mix named inside a stage block always carries its recipe in brackets** — `Замес: №2 (Burnt Umber 3 : Cadmium Red Hue 1)`, or better, the base plus the branch: `телесный + умбра до 5`. The number alone sends the reader back up to the table, which is exactly what cannot happen with a brush in hand.
 
 **Medium:** always its own line or column, even when the answer is "none" everywhere. Thirteen "none" in a row is a rule, not an empty column.
 
