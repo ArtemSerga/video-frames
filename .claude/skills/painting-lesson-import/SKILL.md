@@ -186,6 +186,8 @@ Fetch the series page afterwards and confirm the image is the first content bloc
 
 ### 5.2. Palette scheme for a work
 
+**Fetch the Notion card «🎨 Организация палитры» first** (`https://app.notion.com/p/0e4e02c622228330a5f901e1513f3a7a`), before drawing a palette scheme or writing `### Замесы` for any work. It is the user's own instruction for how mixes are presented: tube numbers and positions, value zones in the centre, palette rules, and the original of the synced colour wheel. Where it disagrees with this section, the card wins; bring this section in line.
+
 When a work card needs "where the mixes go", draw the user's own palette, not the author's. Template: `painting/works/transparent-wave/palette-mixes.py`. Copy it into the work folder, change the mixes, run with `uv run --no-project --with pillow python palette-mixes.py`. Output is `palette-mixes.jpg` next to the script.
 
 **Layout is the Repin hand palette.** A wooden palette with a thumb hole, held horizontally in the left hand. The left edge is the hole and fingers: nothing goes there.
@@ -277,6 +279,8 @@ That is what the card exists for.
 **Brushes:** `shape: softness: size` — `flat: springy: 12`. Softness: stiff, springy, medium, soft.
 
 **Value:** Munsell scale, 0 black, 10 white. Give a target number, not "a bit darker".
+
+**The colour wheel's seven rings are not Munsell steps.** Each hue is purest in a middle ring (third or fourth from the outside); rings outward are its tints, rings inward its shades. One ring spans up to five values across hues: the purest yellow is about 9, the purest violet about 2. Quote value from the grey scale under the wheel, never from a ring index.
 
 **Mixes at the easel are three or four bases, not a numbered table.** The user mixes by eye from the families on the palette. A card that lists 12 puddles will be ignored after the first stage. Lead with the working bases (typically: dark for drawing/shadows, flesh, a colour family for the subject — iris, lips, etc.). Numbered recipes are a calibration chart: how to mix each family the first time, and what value it should hit. They are not 13 wet piles to keep alive at once.
 
