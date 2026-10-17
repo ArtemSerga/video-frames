@@ -184,6 +184,37 @@ The finished painting is the final lesson's state and appears once, at the far r
 
 Fetch the series page afterwards and confirm the image is the first content block. If `progression.jpg` is later overwritten, append or bump `?v=N` in Notion because Notion caches external images.
 
+### 5.2. Palette scheme for a work
+
+When a work card needs "where the mixes go", draw the user's own palette, not the author's. Template: `painting/works/transparent-wave/palette-mixes.py`. Copy it into the work folder, change the mixes, run with `uv run --no-project --with pillow python palette-mixes.py`. Output is `palette-mixes.jpg` next to the script.
+
+**Layout is the Repin hand palette.** A wooden palette with a thumb hole, held horizontally in the left hand. The left edge is the hole and fingers: nothing goes there.
+
+- Top edge, left to right: 1 Titanium, 2 Zinc, 3 Lemon, 4 Cadmium Yellow Hue, 5 Ochre, 6 Sienna, 7 Umber, 8 Alizarin, 9 Cadmium Red Hue.
+- Right edge, top to bottom: 10 Cerulean, 11 Ultramarine, 12 Phthalo Blue, 13 Phthalo Green, 14 dark mix (Umber 1 : Ultramarine 1).
+- These numbers are fixed across every scheme. A tube not used in this work is drawn hollow and labelled "не выдавливать".
+
+**The centre is organised by value, top to bottom.** Lights (7–9) next to the whites, middle values (4–6) below, shadows (1.5–3) next to the dark mix in the bottom-right corner. Horizontal position inside a zone carries no meaning. Each zone is titled with its Munsell range.
+
+**A mix is a large disc with its name; the recipe is small colour circles beside it.** Circle area is proportional to the share of that paint (`r ∝ sqrt(amount)`), tube number under each circle. No numeric ratios in the picture.
+
+**One base, branches in a line.** When several mixes come from one pile (sun, sky, glint from the yellow sky), draw the base in the middle, larger, with its recipe under it. Branches sit on the same line, ordered by value, lighter toward the whites. Arrows carry the addition: `+ белила 1`, `+ охра 5`. Do not draw them as separate recipes.
+
+Labels are Russian (Arial from `/System/Library/Fonts/Supplemental/` — Helvetica has no Cyrillic); code and comments are English. Read the JPEG from disk and fix overlapping labels before committing.
+
+**In Notion** the scheme goes under `### Замесы`, as a two-column block: the 12-part colour wheel on the left, the palette scheme on the right. The wheel is one shared file, `painting/color-wheel-12.jpg`; do not copy it per work.
+
+```
+<columns>
+	<column ratio="40">
+		![Цветовой круг](https://raw.githubusercontent.com/USER/video-frames/main/painting/color-wheel-12.jpg)
+	</column>
+	<column ratio="60">
+		![Палитра с замесами](https://raw.githubusercontent.com/USER/video-frames/main/painting/works/WORK/palette-mixes.jpg)
+	</column>
+</columns>
+```
+
 ### 6. Verification against frames
 
 Once images are in hand, re-check the whole text. What usually turns out different:
