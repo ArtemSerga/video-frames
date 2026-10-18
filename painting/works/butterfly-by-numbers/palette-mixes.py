@@ -134,10 +134,9 @@ for i, n in enumerate(TUBES):
 WX, DX, BX = 170, 820, 1640
 BAND_L, BAND_R = 60, 2340
 FIRST_BAND_TOP = 486
-d.text((WX - 70, 366), "Тёплое · сеанс 2", font=f_col, fill=(30, 30, 30))
-d.text((DX - 70, 366), "Тёмное · сеанс 1", font=f_col, fill=(30, 30, 30))
-d.text((BX - 70, 366), "Синее · сеанс 3", font=f_col, fill=(30, 30, 30))
-d.text((BX - 70, 420), "Тело и Край — сеанс 1", font=f_small, fill=(55, 55, 55))
+d.text((WX - 70, 366), "Тёплое", font=f_col, fill=(30, 30, 30))
+d.text((DX - 70, 366), "Тёмное", font=f_col, fill=(30, 30, 30))
+d.text((BX - 70, 366), "Синее", font=f_col, fill=(30, 30, 30))
 
 # id: (column x, value used for height, colour, name, line, base recipe or None, note)
 PILES = {
@@ -160,6 +159,14 @@ PILES = {
     "edge": (BX, 1.8, "112E4C", "Край крыла", "тон 1,8", None, None),
     "body": (BX, 1.0, "121C30", "Тело", "тон 1,0 · усики, лапки", None, None),
 }
+
+# Rainbow order: session 1 red ... session 7 violet.
+SESSION_COLOUR = {1: (232, 48, 48), 2: (246, 138, 22), 3: (250, 214, 34), 4: (64, 178, 76),
+                  5: (64, 170, 232), 6: (46, 86, 222), 7: (152, 72, 204)}
+SESSIONS = {pid: (2,) for pid in ("flash", "flower", "orange", "spots", "shade_l", "shade", "warm_bg")}
+SESSIONS.update({pid: (1,) for pid in ("plum_l", "dark", "bg", "edge", "body")})
+SESSIONS.update({pid: (3,) for pid in ("light", "stripe", "wing_l", "wing")})
+SESSIONS["blue"] = (1, 3)
 
 # parent, child, parent parts, [(added paint, parts)], lane offset, lane label side
 LINKS = [
@@ -318,6 +325,18 @@ def link(parent, child, p_parts, added, lane, side):
         x += d.textlength(PAINT[paint][0], font=f_small)
 
 
+def session_tag(x, y, sessions, band):
+    parts = [(f"сеанс {sessions[0]}", SESSION_COLOUR[sessions[0]])]
+    for n in sessions[1:]:
+        parts += [(" и ", (200, 196, 190)), (str(n), SESSION_COLOUR[n])]
+    width = sum(d.textlength(t, font=f_name) for t, _ in parts)
+    top, bottom = d.textbbox((x, y), "сеанс", font=f_name)[1::2]
+    d.rounded_rectangle((x - 12, top - 8, x + width + 12, bottom + 8), radius=14, fill=(54, 52, 50))
+    for text, colour in parts:
+        d.text((x, y), text, font=f_name, fill=colour)
+        x += d.textlength(text, font=f_name)
+
+
 def pile(pid):
     x, v, hexcol, name, line, parts, note = PILES[pid]
     y = Y[pid]
@@ -329,6 +348,7 @@ def pile(pid):
     d.ellipse((x - r, y - r, x + r, y + r), fill=hexrgb(hexcol), outline=edge, width=3)
     tx = x + 96
     d.text((tx, y - NAME_UP), name, font=f_name, fill=fg)
+    session_tag(tx + d.textlength(name, font=f_name) + 28, y - NAME_UP, SESSIONS[pid], band_of(v))
     d.text((tx, y - 28), line, font=f_line, fill=sub)
     ny = y + 26
     if parts:
@@ -350,6 +370,6 @@ for i, s in enumerate(["Светлее 6,8 на крыле нет —", "отд�
                        "Мастихин: Свет крыла + белила."]):
     d.text((BX - 30, BANDS[0][0] + 85 + i * 48), s, font=f_small, fill=BANDS[0][4])
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-7.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-8.jpg")
 img.save(out, quality=93)
 print(out, "pad", pad)

@@ -190,7 +190,7 @@ Fetch the series page afterwards and confirm the image is the first content bloc
 
 When a work card needs "where the mixes go", draw the user's own palette, not the author's.
 
-**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-7.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
+**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-8.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
 
 Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion caches external images by URL, so overwriting a published name shows the old picture.
 
@@ -206,9 +206,11 @@ Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion cach
 - These numbers are fixed across every scheme. A tube not used in this work is drawn hollow, with no label explaining it.
 - **The dark mix (14) is not a tube.** It is a base pile in the mix zone: its own column, "Тёмное · сеанс 1", in the shadows band at its own value (1,5–2), with its gold ring and recipe (Umber 1 : Ultramarine 1). A background pile darker than it hangs below it; a lighter one stands above it, linked by a side lane.
 
-**The centre is organised by value, top to bottom.** One column per colour family (warm, dark, blue, …), titled with the session that paints it. The column x carries the family; the y carries the value. Three bands, titled with their Munsell range: lights (6 and up), middle (3–6), shadows (below 3).
+**The centre is organised by value, top to bottom.** One column per colour family (warm, dark, blue, …), titled with the family only. The column x carries the family; the y carries the value. Three bands, titled with their Munsell range: lights (6 and up), middle (3–6), shadows (below 3).
 
 **The height of a pile follows its value across all columns, not just inside one.** A lighter pile is never lower than a darker one anywhere on the sheet. Piles whose values differ by about 0,1 or less share a row (the dark mix at 1,5–2 sits level with the wing edge at 1,8, and the body at 1,0 is below both). The user caught the dark mix (1,5–2) drawn level with the body (1,0) when piles sat in fixed slots per band. The script sorts piles by value, steps down at least 30 px for every darker value, and pushes a pile down further only to clear the pile above it in its own column. A truly proportional scale does not fit A4, so order is kept exactly and the gaps are compressed. There is no value scale on the edge; the user removed it, because the band titles and the pile lines already carry the numbers. Give each pile the value used for placement (the middle of its range, or the modelled value), and keep a derived pile above its parent when white was added (`Цветок` 6,7 above `Оранжевая база` 6,4).
+
+**Each pile carries its session as a tag after its name**: `сеанс 2` in the session's colour on a small dark plate. A pile mixed in two sessions shows both (`Синяя база  сеанс 1 и 3`). Session colours run through the rainbow: 1 red, 2 orange, 3 yellow, 4 green, 5 light blue, 6 blue, 7 violet. In the Notion card the `Сеанс` column of the stage table uses the same colours (Notion: red, orange, yellow, green, blue, then purple). The user asked for this after reading "Тело и Край — сеанс 1" under the blue column as unclear: a column-wide session needs exceptions, a per-pile tag does not. Do not outline the coloured text; a stroke smears it at this size.
 
 **Think in bases and derived piles, not in a list of recipes.** This is the lesson the scheme teaches. The user wants to learn to see how mixes relate, and the scheme is drawn to make that visible:
 
