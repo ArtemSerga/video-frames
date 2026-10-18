@@ -190,31 +190,35 @@ Fetch the series page afterwards and confirm the image is the first content bloc
 
 When a work card needs "where the mixes go", draw the user's own palette, not the author's.
 
-**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-3.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
+**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-4.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
 
 Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion caches external images by URL, so overwriting a published name shows the old picture.
 
-**Layout is the Repin hand palette.** A wooden palette with a thumb hole, held horizontally in the left hand. The left edge is the hole and fingers: nothing goes there.
+**The image is A4 portrait, 1 : 1.414 (2400 × 3394 px).** The user asked for a standard A4 proportion after a 1 : 1.48 version would not fit the screen. Fit the content to that frame; do not let the height grow past it.
 
-- Top edge, left to right: 1 Titanium, 2 Zinc, 3 Lemon, 4 Cadmium Yellow Hue, 5 Ochre, 6 Sienna, 7 Umber, 8 Alizarin, 9 Cadmium Red Hue.
-- Right edge, top to bottom: 10 Cerulean, 11 Ultramarine, 12 Phthalo Blue, 13 Phthalo Green, 14 dark mix (Umber 1 : Ultramarine 1).
+**Tubes sit in one row in the header, under the shape key.** No thumb hole and nothing on the side edges: the user asked to remove both.
+
+- Left group, warm and whites: 1 Titanium, 2 Zinc, 3 Lemon, 4 Cadmium Yellow Hue, 5 Ochre, 6 Sienna, 7 Umber, 8 Alizarin, 9 Cadmium Red Hue.
+- A vertical divider, then the cold group: 10 Cerulean, 11 Ultramarine, 12 Phthalo Blue, 13 Phthalo Green.
+- A tube name wider than about 140 px goes on two lines ("кадм." / "жёлтый"), so neighbouring labels do not touch.
 - These numbers are fixed across every scheme. A tube not used in this work is drawn hollow and labelled "не выдавливать".
+- **The dark mix (14) is not a tube.** It is a base pile in the mix zone: its own column, "Тёмное · сеанс 1", at the bottom of the shadows band, with its gold ring and recipe (Umber 1 : Ultramarine 1). The background piles derived from it stand above it in that column.
 
-**The centre is organised by value, top to bottom.** Three bands: lights next to the whites, middle values below, shadows next to the dark mix in the bottom-right corner. Each band is titled with its Munsell range, set from this work's values. One column per colour family (warm, blue, …), titled with the session that paints it. The column x carries the family; the y carries the value.
+**The centre is organised by value, top to bottom.** Three bands: lights at the top, middle values below, shadows at the bottom, with the dark mix in the bottom slot of its column. Each band is titled with its Munsell range, set from this work's values. One column per colour family (warm, blue, …), titled with the session that paints it. The column x carries the family; the y carries the value.
 
 **Think in bases and derived piles, not in a list of recipes.** This is the lesson the scheme teaches. The user wants to learn to see how mixes relate, and the scheme is drawn to make that visible:
 
-- **Two or three bases per work.** The dark mix (position 14) is always one. Each colour family gets one more: its mother colour at full chroma, with no white and no earth. On the butterfly these were the orange base (Cadmium Yellow Hue 3 : Cadmium Red Hue 1) and the blue base (French Ultramarine 3 : Phthalo Blue 0,3). A base is drawn larger, with a gold ring and its recipe. The dark-mix tube on the edge gets the same ring.
-- **Every other pile is derived from a base or from a neighbouring pile, by adding one paint.** It has no recipe of its own. The arrow carries it: a small disc in the parent's colour with its parts, `+`, the added paint's shape with its parts, and the paint name. `2 + 1 сиена` means two parts of the pile above and one part of sienna.
+- **Two or three bases per work.** The dark mix (position 14) is always one. Each colour family gets one more: its mother colour at full chroma, with no white and no earth. On the butterfly these were the orange base (Cadmium Yellow Hue 3 : Cadmium Red Hue 1) and the blue base (French Ultramarine 3 : Phthalo Blue 0,3). A base is drawn larger, with a gold ring and its recipe.
+- **Every other pile is derived from a base or from a neighbouring pile, by adding one paint, at most two.** It has no recipe of its own. The arrow carries it: a small disc in the parent's colour with its parts, `+`, the added paint's shape with its parts, and the paint name. `2 + 1 сиена` means two parts of the pile above and one part of sienna. The background is `3 + 1 умбра + 0,3 краплак` from the dark mix.
+- **Draw each pile in the colour it should look like, not in a neutral stand-in.** The butterfly background was drawn near-black, so the plum the user saw in the original was missing from the scheme even though the recipe had alizarin in it. Sample the original: if an area reads violet, plum or any other hue, the pile and its name show it (`Фон · слива`). If the original has a colour that the number kit merged away, add a derived pile for it and say "номера нет".
 - **Up the column is white.** Use Zinc for half-lights and Titanium for highlights and for whatever has to cover.
 - **Down the column is a darker paint of the same temperature, not the dark mix.** Orange goes down through sienna, then umber; blue goes down through the dark mix. A warm family darkened with the dark mix turns grey, because the ultramarine in it is the complement. The dark mix enters a warm family only at the very bottom (the background).
-- **A pile in another family's column** is drawn with its recipe as a base, with the root in its name: `Фон · из тёмного замеса`.
 - **A link that skips piles** runs in a side lane, with its label in a dark box.
 - **Mixing order is written in the subtitle:** bases first, then from each base up toward white while the knife is clean, then down. Painting still goes bottom to top.
 
 **Before drawing, fit the chain to the targets.** Take the target hex of every canvas number (trycolors gives them) and grow the chain base → derived piles. Check with a mixing model that each step lands on the value of its numbers; an earlier recipe for "petal shadow" landed on value 6 instead of 3–4.9. A weighted geometric mean of reflectance with a tinting strength per paint, compared in Lab with ΔE94, is enough to choose ratios. It is rough, so the card asks for a test swatch beside the number card. Do not squeeze tubes that the chain does not need. Say in the caption which numbers trycolors mixed with them and what replaced them.
 
-**Paints are marked as on the colour wheel.** The shape is temperature: circle warm, square cold, hexagon cool or neutral. The dark mix is a hexagon. Shapes have equal area, and the number inside is parts. Do not put the tube number under a recipe circle. Tube numbers appear only on the edge blobs, where they are palette positions. The shape key sits on its own line under the subtitle.
+**Paints are marked as on the colour wheel.** The shape is temperature: circle warm, square cold, hexagon cool or neutral. The dark mix is a hexagon. Shapes have equal area, and the number inside is parts. Do not put the tube number under a recipe circle. Tube numbers appear only on the header tubes, where they are palette positions. The shape key sits on its own line under the subtitle.
 
 **Size for reading in Notion, not on disk.** Notion shrinks the image to its column width, so only size relative to the canvas width counts. Making the canvas wider makes everything smaller on screen. The user asked twice for bigger marks and text; these are the minimums on the 2400 px wide reference:
 
@@ -223,10 +227,10 @@ Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion cach
 | Pile swatch | radius 48 px; a base, 60 px with a 10 px gold ring |
 | Recipe marks under a base | radius 45 px, 108 px apart |
 | Arrow marks | radius 33 px |
-| Edge tubes | radius 48 px |
+| Header tubes | radius 48 px, 172 px apart, 60 px extra at the divider |
 | Text | title 60, column and band titles 39–42, pile name 37, value line 30, notes and labels 27, numbers inside marks 30 (px) |
 
-Grow downward: slots 300 px apart, bands about 970 px high. A tall image is fine; a wide one is not. Break any line that would run past the band edge, rather than shrinking the font.
+Inside the A4 frame: bands 910 px high with 20 px gaps, slots 280 px apart, three columns at x 170 / 880 / 1640 (warm, dark, blue). Keep a pile's text out of the next column and out of side lanes. Shorten or break a line that would run into them, rather than shrinking the font.
 
 Labels are Russian (Arial from `/System/Library/Fonts/Supplemental/` — Helvetica has no Cyrillic); code and comments are English. Read the JPEG from disk and fix overlapping labels before committing.
 

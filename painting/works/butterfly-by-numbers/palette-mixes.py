@@ -2,7 +2,7 @@ import math
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-W, H = 2400, 3560
+W, H = 2400, 3394  # A4 portrait, 1 : 1.414
 img = Image.new("RGB", (W, H), (236, 230, 218))
 d = ImageDraw.Draw(img)
 
@@ -100,15 +100,37 @@ for text, kind in [("тёплый", "circle"), ("холодный", "square"), (
 
 d.rounded_rectangle((28, 232, W - 28, H - 24), radius=30, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
 
-hx, hy, hr = 130, 1900, 80
-d.ellipse((hx - hr, hy - hr, hx + hr, hy + hr), fill=(236, 230, 218), outline=(70, 70, 70), width=4)
-d.text((hx, hy), "дырка", font=f_small, fill=(70, 70, 70), anchor="mm")
+R = 48
 
-BAND_L, BAND_R, BAND_H, SLOT = 240, 2040, 970, 300
+
+def blob(x, y, n):
+    name, color = PAINT[n]
+    kind = TEMPERATURE[n]
+    lines = name.split(" ", 1) if d.textlength(name, font=f_edge) > 140 else [name]
+    if n in HOLLOW:
+        shape(kind, x, y, R, None, outline=(40, 40, 40))
+        d.text((x, y), str(n), font=f_num, fill=(30, 30, 30), anchor="mm")
+        lines.append("не выдавливать")
+    else:
+        shape(kind, x, y, R, color)
+        d.text((x, y), str(n), font=f_num, fill=ink(color), anchor="mm")
+    ty = y + R + 10
+    for s in lines:
+        ctext(x, ty, s, f_edge, (25, 25, 25))
+        ty += 31
+
+
+TUBE_Y, TUBE_STEP, TUBE_GAP = 320, 172, 60
+for i in range(13):
+    blob(150 + i * TUBE_STEP + (TUBE_GAP if i >= 9 else 0), TUBE_Y, i + 1)
+sep_x = 150 + 8 * TUBE_STEP + (TUBE_STEP + TUBE_GAP) / 2
+d.line([(sep_x, TUBE_Y - 70), (sep_x, TUBE_Y + 120)], fill=(70, 70, 70), width=4)
+
+BAND_L, BAND_R, BAND_H, SLOT = 60, 2340, 910, 280
 BANDS = [
-    (560, (232, 226, 210), (30, 30, 30), (80, 80, 80), "Света   ·   тон 6–9"),
-    (1550, (190, 168, 142), (28, 26, 24), (60, 52, 44), "Средние   ·   тон 3–6"),
-    (2540, (54, 52, 50), (236, 232, 224), (196, 192, 186), "Тени   ·   тон 1–3"),
+    (570, (232, 226, 210), (30, 30, 30), (80, 80, 80), "Света   ·   тон 6–9"),
+    (1500, (190, 168, 142), (28, 26, 24), (60, 52, 44), "Средние   ·   тон 3–6"),
+    (2430, (54, 52, 50), (236, 232, 224), (196, 192, 186), "Тени   ·   тон 1–3"),
 ]
 for top, bg, fg, _sub, title in BANDS:
     d.rounded_rectangle((BAND_L, top, BAND_R, top + BAND_H), radius=24, fill=bg)
@@ -116,7 +138,7 @@ for top, bg, fg, _sub, title in BANDS:
 
 
 def slot_y(band, slot):
-    return BANDS[band][0] + 175 + slot * SLOT
+    return BANDS[band][0] + 165 + slot * SLOT
 
 
 def text_on(y):
@@ -126,9 +148,11 @@ def text_on(y):
     return (25, 25, 25)
 
 
-WX, BX = 345, 1300
-d.text((WX - 70, 490), "Тёплое · сеанс 2, Фон — сеанс 1", font=f_col, fill=(30, 30, 30))
-d.text((BX - 70, 490), "Синее · сеанс 3, Тело и Край — сеанс 1", font=f_col, fill=(30, 30, 30))
+WX, DX, BX = 170, 880, 1640
+d.text((WX - 70, 470), "Тёплое · сеанс 2", font=f_col, fill=(30, 30, 30))
+d.text((DX - 70, 470), "Тёмное · сеанс 1", font=f_col, fill=(30, 30, 30))
+d.text((BX - 70, 470), "Синее · сеанс 3", font=f_col, fill=(30, 30, 30))
+d.text((BX - 70, 516), "Тело и Край крыла — сеанс 1", font=f_small, fill=(55, 55, 55))
 
 # id: (column x, band, slot, colour, name, line, base recipe or None, note)
 PILES = {
@@ -140,8 +164,12 @@ PILES = {
     "shade_l": (WX, 1, 1, "A5572F", "Тень лепестка светлая", "тон 4,6–4,9 · на холсте 21, 22, 25", None, None),
     "shade": (WX, 1, 2, "823C1A", "Тень лепестка", "тон 3,1–3,8 · на холсте 4, 23, 31, 10", None, None),
     "warm_bg": (WX, 2, 0, "573224", "Тёплый фон", "тон 2,5–3,2 · на холсте 6, 29, 14, 30", None, None),
-    "bg": (WX, 2, 2, "252024", "Фон · из тёмного замеса", "тон 1,2–1,5 · на холсте 1, 32, 28, 15",
-           [(14, 3), (7, 1), (8, 0.3)], "№ 15 — плюс умбра, до 1,8"),
+    "plum_l": (DX, 2, 0, "55474F", "Слива светлая", "тон около 3 · лиловые пятна", None,
+               "номера нет · лиловит — капля умбры"),
+    "bg": (DX, 2, 1, "30222B", "Фон · слива", "тон 1,2–1,5 · на холсте 1, 32, 28, 15", None,
+           "№ 15 — плюс умбра, до 1,8"),
+    "dark": (DX, 2, 2, "1C1E28", "Тёмный замес", "мой чёрный · тон 1,5–2", [(7, 1), (11, 1)],
+             "мешать до нейтрального"),
     "light": (BX, 0, 1, "6196E4", "Свет крыла", "тон 6,2–6,8 · на холсте 9, 24", None,
               "зеленит — капля синей базы"),
     "stripe": (BX, 1, 0, "007ECC", "Полоса крыла", "тон 5,1 · на холсте 18", None, None),
@@ -153,20 +181,22 @@ PILES = {
     "body": (BX, 2, 2, "121C30", "Тело", "тон 1,0 · на холсте 7, усики и лапки", None, None),
 }
 
-# parent, child, parent parts, added paint, added parts, lane offset for links that skip piles
+# parent, child, parent parts, [(added paint, parts)], lane offset for links that skip piles
 LINKS = [
-    ("orange", "flower", 4, 2, 1, 0),
-    ("flower", "flash", 1, 1, 1, 0),
-    ("orange", "spots", 2, 6, 1, 0),
-    ("spots", "shade_l", 3, 6, 1, 0),
-    ("shade_l", "shade", 1, 7, 1, 0),
-    ("shade", "warm_bg", 1, 7, 1, 0),
-    ("blue", "wing", 3, 1, 1, 0),
-    ("wing", "wing_l", 2, 1, 1, 0),
-    ("blue", "edge", 1, 14, 1, 0),
-    ("edge", "body", 1, 14, 1, 0),
-    ("blue", "stripe", 1, 10, 10, -115),
-    ("stripe", "light", 2, 2, 1, 0),
+    ("orange", "flower", 4, [(2, 1)], 0),
+    ("flower", "flash", 1, [(1, 1)], 0),
+    ("orange", "spots", 2, [(6, 1)], 0),
+    ("spots", "shade_l", 3, [(6, 1)], 0),
+    ("shade_l", "shade", 1, [(7, 1)], 0),
+    ("shade", "warm_bg", 1, [(7, 1)], 0),
+    ("dark", "bg", 3, [(7, 1), (8, 0.3)], 0),
+    ("bg", "plum_l", 3, [(1, 1)], 0),
+    ("blue", "wing", 3, [(1, 1)], 0),
+    ("wing", "wing_l", 2, [(1, 1)], 0),
+    ("blue", "edge", 1, [(14, 1)], 0),
+    ("edge", "body", 1, [(14, 1)], 0),
+    ("blue", "stripe", 1, [(10, 10)], -115),
+    ("stripe", "light", 2, [(2, 1)], 0),
 ]
 
 LINK_R = 33
@@ -192,11 +222,11 @@ def halo_head(x, y, up):
     d.polygon(tri, fill=(45, 45, 45), outline=(240, 240, 236))
 
 
-def link_label_width(paint):
-    return 4 * LINK_R + 78 + d.textlength(PAINT[paint][0], font=f_small)
+def link_label_width(added):
+    return 2 * LINK_R + sum(48 + 2 * LINK_R + 12 + d.textlength(PAINT[p][0], font=f_small) for p, _ in added)
 
 
-def link(parent, child, p_parts, paint, a_parts, lane):
+def link(parent, child, p_parts, added, lane):
     px, py = pos(parent)
     cx, cy = pos(child)
     up = cy < py
@@ -208,21 +238,27 @@ def link(parent, child, p_parts, paint, a_parts, lane):
         halo_line([(px - pile_radius(parent), py), (lx, py), (lx, cy), (cx - pile_radius(child) - 24, cy)])
         tip = cx - pile_radius(child) - 6
         d.polygon([(tip, cy), (tip - 22, cy - 14), (tip - 22, cy + 14)], fill=(45, 45, 45), outline=(240, 240, 236))
-        lab_x, lab_y = lx - link_label_width(paint) - 34, (py + cy) / 2
+        lab_x, lab_y = lx - link_label_width(added) - 34, cy + 140
     else:
         halo_line([(px, y0), (px, y1)])
         halo_head(px, y1, up)
         lab_x, lab_y = px + 22, (y0 + y1) / 2
+        if PILES[parent][6] and not up:
+            lab_y = max(lab_y, py + 155)
     fg = text_on(lab_y)
     edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
     if lane:
-        d.rounded_rectangle((lab_x - 12, lab_y - 44, lab_x + link_label_width(paint) + 12, lab_y + 44),
+        d.rounded_rectangle((lab_x - 12, lab_y - 44, lab_x + link_label_width(added) + 12, lab_y + 44),
                             radius=16, fill=(54, 52, 50))
         fg, edge = (236, 232, 224), (215, 215, 215)
     mark(lab_x + LINK_R, lab_y, LINK_R, "circle", hexrgb(PILES[parent][3]), p_parts, edge)
-    d.text((lab_x + 2 * LINK_R + 30, lab_y), "+", font=f_name, fill=fg, anchor="mm")
-    mark(lab_x + 3 * LINK_R + 60, lab_y, LINK_R, TEMPERATURE[paint], PAINT[paint][1], a_parts, edge)
-    d.text((lab_x + 4 * LINK_R + 78, lab_y), PAINT[paint][0], font=f_small, fill=fg, anchor="lm")
+    x = lab_x + 2 * LINK_R
+    for paint, a_parts in added:
+        d.text((x + 24, lab_y), "+", font=f_name, fill=fg, anchor="mm")
+        mark(x + 48 + LINK_R, lab_y, LINK_R, TEMPERATURE[paint], PAINT[paint][1], a_parts, edge)
+        x += 48 + 2 * LINK_R + 12
+        d.text((x, lab_y), PAINT[paint][0], font=f_small, fill=fg, anchor="lm")
+        x += d.textlength(PAINT[paint][0], font=f_small)
 
 
 def pile(pid):
@@ -230,15 +266,15 @@ def pile(pid):
     y = slot_y(band, slot)
     fg, sub = BANDS[band][2], BANDS[band][3]
     r = pile_radius(pid)
-    if parts and pid != "bg":
+    if parts:
         d.ellipse((x - r - 14, y - r - 14, x + r + 14, y + r + 14), outline=BASE_RING, width=10)
-    d.ellipse((x - r, y - r, x + r, y + r), fill=hexrgb(hexcol), outline=(30, 30, 30), width=3)
+    edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
+    d.ellipse((x - r, y - r, x + r, y + r), fill=hexrgb(hexcol), outline=edge, width=3)
     tx = x + 100
     d.text((tx, y - 70), name, font=f_name, fill=fg)
     d.text((tx, y - 22), line, font=f_line, fill=sub)
     ny = y + 26
     if parts:
-        edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
         rx = tx
         for key, amount in parts:
             mark(rx + 45, y + 70, 45, TEMPERATURE[key], PAINT[key][1], amount, edge)
@@ -257,35 +293,7 @@ for i, s in enumerate(["Светлее 6,8 на крыле ничего нет �
                        "Для мастихина: Свет крыла + капля белил."]):
     d.text((BX - 30, slot_y(0, 0) - 80 + i * 38), s, font=f_small, fill=BANDS[0][3])
 
-R = 48
-
-
-def blob(x, y, n):
-    name, color = PAINT[n]
-    kind = TEMPERATURE[n]
-    lines = [name]
-    if n in HOLLOW:
-        shape(kind, x, y, R, None, outline=(40, 40, 40))
-        d.text((x, y), str(n), font=f_num, fill=(30, 30, 30), anchor="mm")
-        lines.append("не выдавливать")
-    else:
-        if n == 14:
-            d.ellipse((x - R - 16, y - R - 16, x + R + 16, y + R + 16), outline=BASE_RING, width=10)
-            lines += ["база: умбра 1 :", "ультрамарин 1", "тон 1,5–2"]
-        shape(kind, x, y, R, color)
-        d.text((x, y), str(n), font=f_num, fill=ink(color), anchor="mm")
-    ty = y + R + (24 if n == 14 else 10)
-    for s in lines:
-        ctext(x, ty, s, f_edge, (25, 25, 25))
-        ty += 31
-
-
-for i in range(9):
-    blob(300 + i * 215, 330, i + 1)
-
-for n, y in zip(range(10, 15), [760, 1300, 1900, 2560, 3170]):
-    blob(2210, y, n)
-
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-3.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-4.jpg")
 img.save(out, quality=93)
 print(out)
+
