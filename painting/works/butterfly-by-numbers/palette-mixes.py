@@ -18,6 +18,7 @@ f_tiny = ImageFont.truetype(reg, 15)
 f_num = ImageFont.truetype(boldp, 20)
 f_edge = ImageFont.truetype(reg, 17)
 f_small = ImageFont.truetype(reg, 18)
+f_part = ImageFont.truetype(boldp, 15)
 
 PAINT = {
     1: ("белила", (246, 246, 242)),
@@ -39,6 +40,12 @@ PAINT = {
 # Lemon and phthalo green are not in this picture.
 HOLLOW = {3, 13}
 
+# Same code as the colour wheel: circle warm, square cold, hexagon cool or neutral.
+TEMPERATURE = {
+    1: "hex", 2: "hex", 3: "square", 4: "circle", 5: "circle", 6: "circle", 7: "hex",
+    8: "square", 9: "circle", 10: "square", 11: "circle", 12: "square", 13: "square", 14: "hex",
+}
+
 
 def hexrgb(s):
     return tuple(int(s[i:i + 2], 16) for i in (0, 2, 4))
@@ -58,14 +65,41 @@ def arrow(x, y0, y1, fill, width=4, head=14):
     d.polygon([(x, y1), (x - head * 0.6, y1 - tip * head), (x + head * 0.6, y1 - tip * head)], fill=fill)
 
 
+def shape_points(kind, x, y, r):
+    # Equal area with a circle of radius r, so no shape reads as a bigger share.
+    if kind == "square":
+        h = r * math.sqrt(math.pi) / 2
+        return [(x - h, y - h), (x + h, y - h), (x + h, y + h), (x - h, y + h)]
+    R = r * math.sqrt(2 * math.pi / (3 * math.sqrt(3)))
+    return [(x + R * math.cos(math.radians(60 * i - 90)),
+             y + R * math.sin(math.radians(60 * i - 90))) for i in range(6)]
+
+
+def shape(kind, x, y, r, fill, outline=(35, 35, 35), width=2):
+    if kind == "circle":
+        d.ellipse((x - r, y - r, x + r, y + r), fill=fill, outline=outline, width=width)
+    else:
+        d.polygon(shape_points(kind, x, y, r), fill=fill, outline=outline, width=width)
+
+
+def ink(color):
+    lum = 0.3 * color[0] + 0.59 * color[1] + 0.11 * color[2]
+    return (20, 20, 20) if lum > 150 else (245, 245, 245)
+
+
+def parts_label(amount):
+    return f"{amount:g}".replace(".", ",")
+
+
 def recipe(x, y, parts, fg):
-    """Component circles; area is proportional to the share of each paint."""
-    k = 10
+    """Paint shapes as on the colour wheel; the number inside is parts."""
+    r = 21
+    edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
     for key, amount in parts:
-        r = max(5, k * math.sqrt(amount))
-        disc(x + r, y, r, PAINT[key][1])
-        ctext(x + r, y + r + 3, str(key), f_tiny, fg)
-        x += 2 * r + 12
+        color = PAINT[key][1]
+        shape(TEMPERATURE[key], x + r, y, r, color, outline=edge)
+        d.text((x + r, y), parts_label(amount), font=f_part, fill=ink(color), anchor="mm")
+        x += 2 * r + 10
     return x
 
 
@@ -80,16 +114,28 @@ def pile(x, y, hexcol, name, line, fg, sub, parts=None, note=None):
         d.text((x + 62, y + (66 if parts else 18)), note, font=f_small, fill=sub)
 
 
-def branch(x, y_from, y_to, label, fg):
+def branch(x, y_from, y_to, paint, fg):
     sgn = 1 if y_to > y_from else -1
     arrow(x, y_from + sgn * 44, y_to - sgn * 36, fg, width=3, head=12)
-    d.text((x + 14, (y_from + y_to) / 2 - 12), label, font=f_small, fill=fg)
+    y = (y_from + y_to) / 2
+    d.text((x + 14, y), "+", font=f_small, fill=fg, anchor="lm")
+    shape(TEMPERATURE[paint], x + 42, y, 11, PAINT[paint][1])
+    d.text((x + 62, y), PAINT[paint][0], font=f_small, fill=fg, anchor="lm")
 
 
 d.text((40, 24), "Бабочка: куда класть замесы", font=f_title, fill=(28, 28, 28))
-d.text((40, 76), "Столбик — одно семейство. Пишешь снизу вверх, от тёмного к белилам. Мешаешь сверху вниз, пока нож чистый. "
-       "Цифра под кружком — номер тюбика.",
+d.text((40, 76), "Столбик — одно семейство. Пишешь снизу вверх, к белилам. Мешаешь сверху вниз, пока нож чистый.",
        font=f_sub, fill=(55, 55, 55))
+
+key = [("круг — тёплый", "circle"), ("квадрат — холодный", "square"), ("шестиугольник — нейтральный", "hex"),
+       ("число в фигуре — части", None)]
+kx = W - 40 - sum(d.textlength(t, font=f_small) + (40 if k else 0) + 28 for t, k in key)
+for text, kind in key:
+    if kind:
+        shape(kind, kx + 14, 88, 13, (200, 200, 200))
+        kx += 34
+    d.text((kx, 88), text, font=f_small, fill=(55, 55, 55), anchor="lm")
+    kx += d.textlength(text, font=f_small) + 34
 
 d.rounded_rectangle((28, 124, W - 28, H - 24), radius=26, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
 
@@ -138,8 +184,8 @@ fg, sub = colors(0)
 pile(WX, row(0, 1), "D79D46", "Цветок", "тон 5,8–6,9 · на холсте 19, 12, 26, 5", fg, sub,
      [(4, 3), (9, 1), (2, 1)], "№ 19 — плюс капля сиены, 5,8")
 pile(WX, row(0, 0), "FFC75B", "Блик цветка", "тон 8,3 · на холсте 27", fg, sub)
-branch(WX, row(0, 1), row(0, 0), "+ белила 1", colors(0)[0])
-branch(WX, row(0, 1), row(1, 0), "+ красный 9", colors(0)[0])
+branch(WX, row(0, 1), row(0, 0), 1, colors(0)[0])
+branch(WX, row(0, 1), row(1, 0), 9, colors(0)[0])
 
 # Blue column, bottom to top.
 fg, sub = colors(2)
@@ -149,7 +195,7 @@ pile(BX, row(2, 0), "112E4C", "Край крыла", "тон 1,8 · на хол�
      [(14, 2), (11, 2), (12, 0.3)])
 fg, sub = colors(1)
 pile(BX, row(1, 1), "005494", "Крыло", "тон 2,7–4,3 · на холсте 8, 11, 20 · 3, 16", fg, sub,
-     [(11, 3), (1, 1), (12, 0.3)], "светлее: + белила 1. № 11 — капля тёплого фона")
+     [(11, 3), (1, 1), (12, 0.3)], "светлее: + белила. № 11 — капля тёплого фона")
 pile(BX, row(1, 0), "007ECC", "Полоса крыла", "тон 5,1 · на холсте 18", fg, sub)
 fg, sub = colors(0)
 pile(BX, row(0, 1), "6196E4", "Свет крыла", "тон 6,2–6,8 · на холсте 9, 24", fg, sub,
@@ -157,23 +203,26 @@ pile(BX, row(0, 1), "6196E4", "Свет крыла", "тон 6,2–6,8 · на �
 d.text((BX - 20, row(0, 0) - 40), "Светлее 6,8 на крыле ничего нет — отдельного блика не мешать.",
        font=f_small, fill=colors(0)[1])
 d.text((BX - 20, row(0, 0) - 14), "Для мастихина: Свет крыла + капля белил.", font=f_small, fill=colors(0)[1])
-branch(BX, row(0, 1), row(1, 0), "+ ультрамарин 11", colors(0)[0])
+branch(BX, row(0, 1), row(1, 0), 11, colors(0)[0])
 
 R = 26
 
 
 def blob(x, y, n):
     name, color = PAINT[n]
+    kind = TEMPERATURE[n]
     if n in HOLLOW:
-        d.ellipse((x - R, y - R, x + R, y + R), outline=(40, 40, 40), width=2)
+        shape(kind, x, y, R, None, outline=(40, 40, 40))
         ctext(x, y - 12, str(n), f_num, (30, 30, 30))
         ctext(x, y + R + 6, name, f_edge, (25, 25, 25))
         ctext(x, y + R + 26, "не выдавливать", f_edge, (25, 25, 25))
     else:
-        disc(x, y, R, color, outline=(35, 35, 35))
-        lum = 0.3 * color[0] + 0.59 * color[1] + 0.11 * color[2]
-        ctext(x, y - 12, str(n), f_num, (20, 20, 20) if lum > 150 else (245, 245, 245))
+        shape(kind, x, y, R, color)
+        ctext(x, y - 12, str(n), f_num, ink(color))
         ctext(x, y + R + 6, name, f_edge, (25, 25, 25))
+    if n == 14:
+        ctext(x, y + R + 26, "умбра 1 : ультрамарин 1", f_edge, (25, 25, 25))
+        ctext(x, y + R + 46, "тон 1,5–2", f_edge, (25, 25, 25))
 
 
 for i in range(9):
@@ -182,6 +231,6 @@ for i in range(9):
 for n, y in zip(range(10, 15), [470, 760, 1060, 1380, 1760]):
     blob(2125, y, n)
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-columns.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-shapes.jpg")
 img.save(out, quality=93)
 print(out)
