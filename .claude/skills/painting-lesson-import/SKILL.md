@@ -190,7 +190,7 @@ Fetch the series page afterwards and confirm the image is the first content bloc
 
 When a work card needs "where the mixes go", draw the user's own palette, not the author's.
 
-**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-5.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
+**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-6.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
 
 Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion caches external images by URL, so overwriting a published name shows the old picture.
 
@@ -200,15 +200,15 @@ Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion cach
 
 **No paint-by-numbers or trycolors numbers in the scheme.** The user does not use trycolors and does not want the scheme tied to a kit's numbers: no "на холсте 4, 23", no "№ 11 — …", no "номера нет". A pile's line is its value plus, where the name does not say it, where it goes on the painting (`тон 5,8–6,9 · лепестки на свету`). Notes say where in words (`у цветов: + умбра`, `сероватое: + тёплый фон`).
 
-**A value scale runs down the left edge**, titled "тон": Munsell greys with their number, evenly spaced inside each band over that band's range (9–6, 6–3, 3–1). Munsell value is close to L*/10.
-
 - Left group, warm and whites: 1 Titanium, 2 Zinc, 3 Lemon, 4 Cadmium Yellow Hue, 5 Ochre, 6 Sienna, 7 Umber, 8 Alizarin, 9 Cadmium Red Hue.
 - A vertical divider, then the cold group: 10 Cerulean, 11 Ultramarine, 12 Phthalo Blue, 13 Phthalo Green.
 - A tube name wider than about 150 px goes on two lines ("кадм." / "жёлтый"). Tubes are packed by label width and the slack is spread evenly, so neighbouring labels do not touch.
 - These numbers are fixed across every scheme. A tube not used in this work is drawn hollow; the shape key carries one entry "пустая — не выдавливать" instead of a label under each hollow tube.
-- **The dark mix (14) is not a tube.** It is a base pile in the mix zone: its own column, "Тёмное · сеанс 1", at the bottom of the shadows band, with its gold ring and recipe (Umber 1 : Ultramarine 1). The background piles derived from it stand above it in that column.
+- **The dark mix (14) is not a tube.** It is a base pile in the mix zone: its own column, "Тёмное · сеанс 1", in the shadows band at its own value (1,5–2), with its gold ring and recipe (Umber 1 : Ultramarine 1). A background pile darker than it hangs below it; a lighter one stands above it, linked by a side lane.
 
-**The centre is organised by value, top to bottom.** Three bands: lights at the top, middle values below, shadows at the bottom, with the dark mix in the bottom slot of its column. Each band is titled with its Munsell range, set from this work's values. One column per colour family (warm, blue, …), titled with the session that paints it. The column x carries the family; the y carries the value.
+**The centre is organised by value, top to bottom.** One column per colour family (warm, dark, blue, …), titled with the session that paints it. The column x carries the family; the y carries the value. Three bands, titled with their Munsell range: lights (6 and up), middle (3–6), shadows (below 3).
+
+**The height of a pile follows its value across all columns, not just inside one.** A lighter pile is never lower than a darker one anywhere on the sheet. Piles whose values differ by about 0,1 or less share a row (the dark mix at 1,5–2 sits level with the wing edge at 1,8, and the body at 1,0 is below both). The user caught the dark mix (1,5–2) drawn level with the body (1,0) when piles sat in fixed slots per band. The script sorts piles by value, steps down at least 30 px for every darker value, and pushes a pile down further only to clear the pile above it in its own column. A truly proportional scale does not fit A4, so order is kept exactly and the gaps are compressed. There is no value scale on the edge; the user removed it, because the band titles and the pile lines already carry the numbers. Give each pile the value used for placement (the middle of its range, or the modelled value), and keep a derived pile above its parent when white was added (`Цветок` 6,7 above `Оранжевая база` 6,4).
 
 **Think in bases and derived piles, not in a list of recipes.** This is the lesson the scheme teaches. The user wants to learn to see how mixes relate, and the scheme is drawn to make that visible:
 
@@ -218,6 +218,7 @@ Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion cach
 - **Up the column is white.** Use Zinc for half-lights and Titanium for highlights and for whatever has to cover.
 - **Down the column is a darker paint of the same temperature, not the dark mix.** Orange goes down through sienna, then umber; blue goes down through the dark mix. A warm family darkened with the dark mix turns grey, because the ultramarine in it is the complement. The dark mix enters a warm family only at the very bottom (the background).
 - **A link that skips piles** runs in a side lane, with its label in a dark box.
+- **A link that crosses into the next band** carries its label at the foot of the upper band; there the label cannot collide with the band title, which sits top right.
 - **Mixing order goes in the card caption, not on the image:** bases first, then from each base up toward white while the knife is clean, then down. Painting still goes bottom to top.
 
 **Before drawing, fit the chain to the targets.** Sample the target colours from the original image, one per area that needs its own pile, and grow the chain base → derived piles. Check with a mixing model that each step lands on the value of its area; an earlier recipe for "petal shadow" landed on value 6 instead of 3–4.9. A weighted geometric mean of reflectance with a tinting strength per paint, compared in Lab with ΔE94, is enough to choose ratios. It is rough, so the card asks for a test swatch. Do not squeeze tubes that the chain does not need.
@@ -232,10 +233,9 @@ Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion cach
 | Recipe marks under a base | radius 45 px, 108 px apart |
 | Arrow marks | radius 33 px |
 | Header tubes | radius 48 px, packed by label width, 70 px extra at the divider |
-| Value scale | 88 px grey squares at x 112 |
 | Text | title 60, column and band titles 42, pile name 44, value line 40, notes, arrow labels and the shape key 40, tube names 37, numbers inside marks 30 (px) |
 
-Inside the A4 frame: bands from x 180, 920 px high with 15 px gaps, slots 280 px apart, three columns at x 270 / 900 / 1640 (warm, dark, blue). Keep lines short (value plus a few words), because at 40 px a long note runs into the next column. Keep a pile's text out of the next column and out of side lanes. Shorten or break a line that would run into them, rather than shrinking the font.
+Inside the A4 frame: bands from x 60 to 2340 with 15 px gaps, their heights derived from the piles; three columns at x 170 / 820 / 1640 (warm, dark, blue). The spacing between piles is padded evenly until the bottom band reaches the frame. Keep lines short (value plus a few words), because at 40 px a long note runs into the next column. Keep a pile's text out of the next column and out of side lanes. Shorten or break a line that would run into them, rather than shrinking the font.
 
 Labels are Russian (Arial from `/System/Library/Fonts/Supplemental/` — Helvetica has no Cyrillic); code and comments are English. Read the JPEG from disk and fix overlapping labels before committing.
 

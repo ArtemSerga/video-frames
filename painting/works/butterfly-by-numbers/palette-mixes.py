@@ -85,14 +85,6 @@ def mark(x, y, r, kind, color, amount, outline):
     d.text((x, y), parts_label(amount), font=f_part, fill=ink(color), anchor="mm")
 
 
-def munsell_grey(v):
-    # Munsell value is close to L*/10; L* to an sRGB grey.
-    y = ((v * 10 + 16) / 116) ** 3 if v * 10 > 8 else v * 10 / 903.3
-    s = 12.92 * y if y <= 0.0031308 else 1.055 * y ** (1 / 2.4) - 0.055
-    g = round(max(0, min(1, s)) * 255)
-    return (g, g, g)
-
-
 d.text((40, 28), "Бабочка: три базы и что из них выводится", font=f_title, fill=(28, 28, 28))
 
 kx = 40
@@ -152,97 +144,137 @@ for i, n in enumerate(TUBES):
     if i < len(gaps):
         x += gaps[i] + extra
 
-SCALE_X, BAND_L, BAND_R, BAND_H, BAND_GAP, SLOT = 112, 180, 2340, 920, 15, 280
-BANDS = [
-    (560, (232, 226, 210), (30, 30, 30), (80, 80, 80), "Света   ·   тон 6–9", (9, 6)),
-    (1495, (190, 168, 142), (28, 26, 24), (60, 52, 44), "Средние   ·   тон 3–6", (6, 3)),
-    (2430, (54, 52, 50), (236, 232, 224), (196, 192, 186), "Тени   ·   тон 1–3", (3, 1)),
-]
-for top, bg, fg, _sub, title, _rng in BANDS:
-    d.rounded_rectangle((BAND_L, top, BAND_R, top + BAND_H), radius=24, fill=bg)
-    d.text((BAND_R - 26 - d.textlength(title, font=f_zone), top + 18), title, font=f_zone, fill=fg)
-
-ctext(SCALE_X, BANDS[0][0] - 52, "тон", f_small, (30, 30, 30))
-for top, _bg, _fg, _sub, _t, (hi, lo) in BANDS:
-    values = list(range(hi, lo - 1, -1))
-    step = (BAND_H - 40) / len(values)
-    for i, v in enumerate(values):
-        cy = top + 20 + step * (i + 0.5)
-        grey = munsell_grey(v)
-        d.rounded_rectangle((SCALE_X - 44, cy - 44, SCALE_X + 44, cy + 44), radius=10, fill=grey,
-                            outline=(60, 60, 60), width=2)
-        d.text((SCALE_X, cy), str(v), font=f_name, fill=ink(grey), anchor="mm")
-
-
-def slot_y(band, slot):
-    return BANDS[band][0] + 160 + slot * SLOT
-
-
-def text_on(y):
-    for top, _bg, fg, _sub, _t, _r in BANDS:
-        if top <= y <= top + BAND_H:
-            return fg
-    return (25, 25, 25)
-
-
-WX, DX, BX = 270, 900, 1640
+WX, DX, BX = 170, 820, 1640
+BAND_L, BAND_R = 60, 2340
+FIRST_BAND_TOP = 560
 d.text((WX - 70, 440), "Тёплое · сеанс 2", font=f_col, fill=(30, 30, 30))
 d.text((DX - 70, 440), "Тёмное · сеанс 1", font=f_col, fill=(30, 30, 30))
 d.text((BX - 70, 440), "Синее · сеанс 3", font=f_col, fill=(30, 30, 30))
 d.text((BX - 70, 494), "Тело и Край — сеанс 1", font=f_small, fill=(55, 55, 55))
 
-# id: (column x, band, slot, colour, name, line, base recipe or None, note)
+# id: (column x, value used for height, colour, name, line, base recipe or None, note)
 PILES = {
-    "flash": (WX, 0, 0, "FFC75B", "Блик цветка", "тон 8,3 · искры, тычинки", None, None),
-    "flower": (WX, 0, 1, "D58529", "Цветок", "тон 5,8–6,9 · лепестки на свету", None,
+    "flash": (WX, 8.3, "FFC75B", "Блик цветка", "тон 8,3 · искры, тычинки", None, None),
+    "flower": (WX, 6.7, "D58529", "Цветок", "тон 5,8–6,9 · лепестки на свету", None,
                "тусклее: + охра · глубже: + сиена"),
-    "orange": (WX, 0, 2, "F0901E", "Оранжевая база", "сама на холст не идёт", [(4, 3), (9, 1)], None),
-    "spots": (WX, 1, 0, "BA6B2E", "Пятна на крыле", "тон 5,3", None, None),
-    "shade_l": (WX, 1, 1, "A5572F", "Тень лепестка светлая", "тон 4,6–4,9", None, None),
-    "shade": (WX, 1, 2, "823C1A", "Тень лепестка", "тон 3,1–3,8", None, None),
-    "warm_bg": (WX, 2, 0, "573224", "Тёплый фон", "тон 2,5–3,2", None, None),
-    "plum_l": (DX, 2, 0, "55474F", "Слива светлая", "тон около 3 · пятна фона", None,
-               "лиловит: + капля умбры"),
-    "bg": (DX, 2, 1, "30222B", "Фон · слива", "тон 1,2–1,5", None, "у цветов: + умбра, до 1,8"),
-    "dark": (DX, 2, 2, "1C1E28", "Тёмный замес", "мой чёрный · тон 1,5–2", [(7, 1), (11, 1)],
-             "до нейтрального"),
-    "light": (BX, 0, 1, "6196E4", "Свет крыла", "тон 6,2–6,8", None, "зеленит: + синяя база"),
-    "stripe": (BX, 1, 0, "007ECC", "Полоса крыла", "тон 5,1", None, None),
-    "wing_l": (BX, 1, 1, "0066BA", "Крыло светлое", "тон 3,5–4,3", None, None),
-    "wing": (BX, 1, 2, "0B3B8B", "Крыло", "тон 2,7–2,8", None, "сероватое: + тёплый фон"),
-    "blue": (BX, 2, 0, "1E2A8A", "Синяя база", "тон около 2,3", [(11, 3), (12, 0.3)], None),
-    "edge": (BX, 2, 1, "112E4C", "Край крыла", "тон 1,8", None, None),
-    "body": (BX, 2, 2, "121C30", "Тело", "тон 1,0 · усики, лапки", None, None),
+    "orange": (WX, 6.4, "F0901E", "Оранжевая база", "тон около 6,5 · на холст не идёт", [(4, 3), (9, 1)], None),
+    "spots": (WX, 5.3, "BA6B2E", "Пятна на крыле", "тон 5,3", None, None),
+    "shade_l": (WX, 4.75, "A5572F", "Тень лепестка светлая", "тон 4,6–4,9", None, None),
+    "shade": (WX, 3.45, "823C1A", "Тень лепестка", "тон 3,1–3,8", None, None),
+    "warm_bg": (WX, 2.85, "573224", "Тёплый фон", "тон 2,5–3,2", None, None),
+    "plum_l": (DX, 3.0, "55474F", "Слива светлая", "тон около 3 · пятна фона", None, "лиловит: + капля умбры"),
+    "dark": (DX, 1.75, "1C1E28", "Тёмный замес", "мой чёрный · тон 1,5–2", [(7, 1), (11, 1)], "до нейтрального"),
+    "bg": (DX, 1.35, "30222B", "Фон · слива", "тон 1,2–1,5", None, "у цветов: + умбра, до 1,8"),
+    "light": (BX, 6.5, "6196E4", "Свет крыла", "тон 6,2–6,8", None, "зеленит: + синяя база"),
+    "stripe": (BX, 5.1, "007ECC", "Полоса крыла", "тон 5,1", None, None),
+    "wing_l": (BX, 3.9, "0066BA", "Крыло светлое", "тон 3,5–4,3", None, None),
+    "wing": (BX, 2.75, "0B3B8B", "Крыло", "тон 2,7–2,8", None, "сероватое: + тёплый фон"),
+    "blue": (BX, 2.3, "1E2A8A", "Синяя база", "тон около 2,3", [(11, 3), (12, 0.3)], None),
+    "edge": (BX, 1.8, "112E4C", "Край крыла", "тон 1,8", None, None),
+    "body": (BX, 1.0, "121C30", "Тело", "тон 1,0 · усики, лапки", None, None),
 }
 
-# parent, child, parent parts, [(added paint, parts)], lane offset for links that skip piles
+# parent, child, parent parts, [(added paint, parts)], lane offset, lane label side
 LINKS = [
-    ("orange", "flower", 4, [(2, 1)], 0),
-    ("flower", "flash", 1, [(1, 1)], 0),
-    ("orange", "spots", 2, [(6, 1)], 0),
-    ("spots", "shade_l", 3, [(6, 1)], 0),
-    ("shade_l", "shade", 1, [(7, 1)], 0),
-    ("shade", "warm_bg", 1, [(7, 1)], 0),
-    ("dark", "bg", 3, [(7, 1), (8, 0.3)], 0),
-    ("bg", "plum_l", 3, [(1, 1)], 0),
-    ("blue", "wing", 3, [(1, 1)], 0),
-    ("wing", "wing_l", 2, [(1, 1)], 0),
-    ("blue", "edge", 1, [(14, 1)], 0),
-    ("edge", "body", 1, [(14, 1)], 0),
-    ("blue", "stripe", 1, [(10, 10)], -115),
-    ("stripe", "light", 2, [(2, 1)], 0),
+    ("orange", "flower", 4, [(2, 1)], 0, None),
+    ("flower", "flash", 1, [(1, 1)], 0, None),
+    ("orange", "spots", 2, [(6, 1)], 0, None),
+    ("spots", "shade_l", 3, [(6, 1)], 0, None),
+    ("shade_l", "shade", 1, [(7, 1)], 0, None),
+    ("shade", "warm_bg", 1, [(7, 1)], 0, None),
+    ("dark", "bg", 3, [(7, 1), (8, 0.3)], 0, None),
+    ("bg", "plum_l", 3, [(1, 1)], -115, "right"),
+    ("blue", "wing", 3, [(1, 1)], 0, None),
+    ("wing", "wing_l", 2, [(1, 1)], 0, None),
+    ("blue", "edge", 1, [(14, 1)], 0, None),
+    ("edge", "body", 1, [(14, 1)], 0, None),
+    ("blue", "stripe", 1, [(10, 10)], -115, "left"),
+    ("stripe", "light", 2, [(2, 1)], 0, None),
 ]
+
+BAND_STYLE = [
+    ((232, 226, 210), (30, 30, 30), (80, 80, 80), "Света   ·   тон 6–9"),
+    ((190, 168, 142), (28, 26, 24), (60, 52, 44), "Средние   ·   тон 3–6"),
+    ((54, 52, 50), (236, 232, 224), (196, 192, 186), "Тени   ·   тон 1–3"),
+]
+
+NAME_UP, LABEL_ROOM, TITLE_ROOM, BAND_PAD, BAND_GAP = 82, 86, 70, 30, 15
+SAME_ROW, CROSS_STEP, CROSS_ROOM = 0.12, 30, 90
+
+
+def band_of(v):
+    return 0 if v >= 6 else 1 if v >= 3 else 2
+
+
+# A link that crosses into the next band carries its label at the foot of the upper band.
+CROSSERS = {max(a, b, key=lambda k: PILES[k][1]) for a, b, _p, _a, lane, _s in LINKS
+            if not lane and band_of(PILES[a][1]) != band_of(PILES[b][1])}
+
+
+def below(pid):
+    parts, note = PILES[pid][5], PILES[pid][6]
+    if parts:
+        return 172 if note else 115
+    return 66 if note else 14
+
+
+def layout(pad):
+    # Lighter is always higher, in every column; near-equal values share a row.
+    ys, last_in_col, prev = {}, {}, None
+    for pid in sorted(PILES, key=lambda k: -PILES[k][1]):
+        x, v = PILES[pid][:2]
+        if prev is None:
+            y = FIRST_BAND_TOP + TITLE_ROOM + NAME_UP
+        else:
+            py, pv = prev
+            y = py + (CROSS_STEP if pv - v > SAME_ROW else 0)
+            if band_of(v) != band_of(pv):
+                lowest = max(yy + below(k) + (CROSS_ROOM if k in CROSSERS else 0) for k, yy in ys.items())
+                y = max(y, lowest + BAND_PAD + BAND_GAP + TITLE_ROOM + NAME_UP)
+        if x in last_in_col:
+            k = last_in_col[x]
+            y = max(y, ys[k] + below(k) + LABEL_ROOM + pad + NAME_UP)
+        ys[pid] = y
+        last_in_col[x] = pid
+        prev = (y, v)
+    return ys
+
+
+def band_rects(ys):
+    tops, bottoms = [], []
+    for b in range(3):
+        members = [k for k in ys if band_of(PILES[k][1]) == b]
+        tops.append(min(ys[k] for k in members) - NAME_UP - TITLE_ROOM)
+        bottoms.append(max(ys[k] + below(k) + (CROSS_ROOM if k in CROSSERS else 0) for k in members) + BAND_PAD)
+    for b in range(2):
+        bottoms[b] = tops[b + 1] - BAND_GAP
+    return list(zip(tops, bottoms))
+
+
+pad = max(p for p in range(0, 300, 5) if band_rects(layout(p))[2][1] <= H - 50)
+Y = layout(pad)
+BANDS = [(t, b) + BAND_STYLE[i] for i, (t, b) in enumerate(band_rects(Y))]
+for top, bottom, bg, fg, _sub, title in BANDS:
+    d.rounded_rectangle((BAND_L, top, BAND_R, bottom), radius=24, fill=bg)
+    d.text((BAND_R - 26 - d.textlength(title, font=f_zone), top + 18), title, font=f_zone, fill=fg)
+
+
+def text_on(y):
+    for top, bottom, _bg, fg, _sub, _t in BANDS:
+        if top <= y <= bottom:
+            return fg
+    return (25, 25, 25)
+
 
 LINK_R = 33
 
 
 def pos(pid):
-    x, band, slot = PILES[pid][:3]
-    return x, slot_y(band, slot)
+    return PILES[pid][0], Y[pid]
 
 
 def pile_radius(pid):
-    return 60 if PILES[pid][6] else 48
+    return 60 if PILES[pid][5] else 48
 
 
 def halo_line(points, width=4):
@@ -260,7 +292,7 @@ def link_label_width(added):
     return 2 * LINK_R + sum(48 + 2 * LINK_R + 12 + d.textlength(PAINT[p][0], font=f_small) for p, _ in added)
 
 
-def link(parent, child, p_parts, added, lane):
+def link(parent, child, p_parts, added, lane, side):
     px, py = pos(parent)
     cx, cy = pos(child)
     up = cy < py
@@ -272,20 +304,24 @@ def link(parent, child, p_parts, added, lane):
         halo_line([(px - pile_radius(parent), py), (lx, py), (lx, cy), (cx - pile_radius(child) - 24, cy)])
         tip = cx - pile_radius(child) - 6
         d.polygon([(tip, cy), (tip - 22, cy - 14), (tip - 22, cy + 14)], fill=(45, 45, 45), outline=(240, 240, 236))
-        lab_x, lab_y = lx - link_label_width(added) - 34, cy + 140
+        if side == "left":
+            lab_x, lab_y = lx - link_label_width(added) - 34, cy + 140
+        else:
+            lab_x, lab_y = lx + 34, (py + cy) / 2
     else:
         halo_line([(px, y0), (px, y1)])
         halo_head(px, y1, up)
-        lab_x, lab_y = px + 22, (y0 + y1) / 2
-        if PILES[parent][6] and not up:
-            lab_y = max(lab_y, py + 159)
+        upper, lower = (child, parent) if up else (parent, child)
+        lab_x, lab_y = px + 22, (Y[upper] + below(upper) + Y[lower] - NAME_UP) / 2
+        if upper in CROSSERS:
+            lab_y = (Y[upper] + below(upper) + BANDS[band_of(PILES[upper][1])][1]) / 2
     fg = text_on(lab_y)
     edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
     if lane:
         d.rounded_rectangle((lab_x - 12, lab_y - 44, lab_x + link_label_width(added) + 12, lab_y + 44),
                             radius=16, fill=(54, 52, 50))
         fg, edge = (236, 232, 224), (215, 215, 215)
-    mark(lab_x + LINK_R, lab_y, LINK_R, "circle", hexrgb(PILES[parent][3]), p_parts, edge)
+    mark(lab_x + LINK_R, lab_y, LINK_R, "circle", hexrgb(PILES[parent][2]), p_parts, edge)
     x = lab_x + 2 * LINK_R
     for paint, a_parts in added:
         d.text((x + 24, lab_y), "+", font=f_name, fill=fg, anchor="mm")
@@ -296,16 +332,16 @@ def link(parent, child, p_parts, added, lane):
 
 
 def pile(pid):
-    x, band, slot, hexcol, name, line, parts, note = PILES[pid]
-    y = slot_y(band, slot)
-    fg, sub = BANDS[band][2], BANDS[band][3]
+    x, v, hexcol, name, line, parts, note = PILES[pid]
+    y = Y[pid]
+    fg, sub = BANDS[band_of(v)][3], BANDS[band_of(v)][4]
     r = pile_radius(pid)
     if parts:
         d.ellipse((x - r - 14, y - r - 14, x + r + 14, y + r + 14), outline=BASE_RING, width=10)
     edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
     d.ellipse((x - r, y - r, x + r, y + r), fill=hexrgb(hexcol), outline=edge, width=3)
     tx = x + 96
-    d.text((tx, y - 82), name, font=f_name, fill=fg)
+    d.text((tx, y - NAME_UP), name, font=f_name, fill=fg)
     d.text((tx, y - 28), line, font=f_line, fill=sub)
     ny = y + 26
     if parts:
@@ -325,8 +361,8 @@ for pid in PILES:
 
 for i, s in enumerate(["Светлее 6,8 на крыле нет —", "отдельного блика не мешать.",
                        "Мастихин: Свет крыла + белила."]):
-    d.text((BX - 30, slot_y(0, 0) - 84 + i * 48), s, font=f_small, fill=BANDS[0][3])
+    d.text((BX - 30, BANDS[0][0] + 85 + i * 48), s, font=f_small, fill=BANDS[0][4])
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-5.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-6.jpg")
 img.save(out, quality=93)
-print(out)
+print(out, "pad", pad)
