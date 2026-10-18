@@ -2,7 +2,7 @@ import math
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-W, H = 2300, 1980
+W, H = 2300, 2030
 img = Image.new("RGB", (W, H), (236, 230, 218))
 d = ImageDraw.Draw(img)
 
@@ -10,8 +10,10 @@ reg = "/System/Library/Fonts/Supplemental/Arial.ttf"
 boldp = "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
 f_title = ImageFont.truetype(boldp, 40)
 f_sub = ImageFont.truetype(reg, 23)
-f_zone = ImageFont.truetype(boldp, 30)
-f_name = ImageFont.truetype(boldp, 22)
+f_zone = ImageFont.truetype(boldp, 28)
+f_col = ImageFont.truetype(boldp, 26)
+f_name = ImageFont.truetype(boldp, 25)
+f_line = ImageFont.truetype(reg, 20)
 f_tiny = ImageFont.truetype(reg, 15)
 f_num = ImageFont.truetype(boldp, 20)
 f_edge = ImageFont.truetype(reg, 17)
@@ -38,6 +40,10 @@ PAINT = {
 HOLLOW = {3, 13}
 
 
+def hexrgb(s):
+    return tuple(int(s[i:i + 2], 16) for i in (0, 2, 4))
+
+
 def ctext(x, y, s, font, fill):
     d.text((x - d.textlength(s, font=font) / 2, y), s, font=font, fill=fill)
 
@@ -46,44 +52,43 @@ def disc(x, y, r, color, outline=(45, 45, 45)):
     d.ellipse((x - r, y - r, x + r, y + r), fill=color, outline=outline, width=2)
 
 
+def arrow(x, y0, y1, fill, width=4, head=14):
+    d.line((x, y0, x, y1), fill=fill, width=width)
+    tip = 1 if y1 > y0 else -1
+    d.polygon([(x, y1), (x - head * 0.6, y1 - tip * head), (x + head * 0.6, y1 - tip * head)], fill=fill)
+
+
 def recipe(x, y, parts, fg):
-    """Draw component circles; area is proportional to the share of each paint."""
+    """Component circles; area is proportional to the share of each paint."""
     k = 10
     for key, amount in parts:
-        color = PAINT[key][1]
         r = max(5, k * math.sqrt(amount))
-        disc(x + r, y, r, color)
+        disc(x + r, y, r, PAINT[key][1])
         ctext(x + r, y + r + 3, str(key), f_tiny, fg)
         x += 2 * r + 12
     return x
 
 
-def mix(x, y, color, name, parts, fg):
-    disc(x, y, 30, color)
-    d.text((x + 44, y - 42), name, font=f_name, fill=fg)
-    recipe(x + 44, y + 16, parts, fg)
+def pile(x, y, hexcol, name, line, fg, sub, parts=None, note=None):
+    """A base carries its recipe; a branch is drawn smaller and gets its recipe from the arrow."""
+    disc(x, y, 40 if parts else 32, hexrgb(hexcol), outline=(30, 30, 30))
+    d.text((x + 62, y - 46), name, font=f_name, fill=fg)
+    d.text((x + 62, y - 14), line, font=f_line, fill=sub)
+    if parts:
+        recipe(x + 62, y + 32, parts, fg)
+    if note:
+        d.text((x + 62, y + (66 if parts else 18)), note, font=f_small, fill=sub)
 
 
-def value_line(y, items, fg, base_parts):
-    """One base in the middle, lighter to the left, duller to the right."""
-    xs = [400, 900, 1400]
-    for (col, name, tone, _label), x in zip(items, xs):
-        disc(x, y, 46 if "база" in tone else 36, col, outline=(30, 30, 30))
-        ctext(x, y + 54, name, f_name, fg)
-        ctext(x, y + 82, tone, f_small, (70, 70, 70))
-    for a, b, label in ((xs[1], xs[0], items[0][3]), (xs[1], xs[2], items[2][3])):
-        sx = a - 60 if b < a else a + 60
-        ex = b + 50 if b < a else b - 50
-        d.line((sx, y, ex, y), fill=(70, 70, 70), width=4)
-        tip = -1 if b < a else 1
-        d.polygon([(ex, y), (ex - tip * 16, y - 9), (ex - tip * 16, y + 9)], fill=(70, 70, 70))
-        ctext((sx + ex) / 2, y - 34, label, f_small, (50, 50, 50))
-    ctext(xs[1], y + 118, "база:", f_small, (70, 70, 70))
-    recipe(xs[1] - 34, y + 156, base_parts, fg)
+def branch(x, y_from, y_to, label, fg):
+    sgn = 1 if y_to > y_from else -1
+    arrow(x, y_from + sgn * 44, y_to - sgn * 36, fg, width=3, head=12)
+    d.text((x + 14, (y_from + y_to) / 2 - 12), label, font=f_small, fill=fg)
 
 
 d.text((40, 24), "Бабочка: куда класть замесы", font=f_title, fill=(28, 28, 28))
-d.text((40, 76), "Большой круг — замес. Маленькие кружки — из чего он: чем больше кружок, тем больше этой краски. Цифра под кружком — номер тюбика.",
+d.text((40, 76), "Столбик — одно семейство. Пишешь снизу вверх, от тёмного к белилам. Мешаешь сверху вниз, пока нож чистый. "
+       "Цифра под кружком — номер тюбика.",
        font=f_sub, fill=(55, 55, 55))
 
 d.rounded_rectangle((28, 124, W - 28, H - 24), radius=26, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
@@ -92,47 +97,67 @@ hx, hy, hr = 140, 1180, 70
 d.ellipse((hx - hr, hy - hr, hx + hr, hy + hr), fill=(236, 230, 218), outline=(70, 70, 70), width=4)
 ctext(hx, hy - 10, "дырка", f_small, (70, 70, 70))
 
-
-def zone(box, bg, fg, title):
-    d.rounded_rectangle(box, radius=20, fill=bg)
-    d.text((box[0] + 22, box[1] + 14), title, font=f_zone, fill=fg)
-
-
-lfg = (30, 30, 30)
-zone((220, 360, 1620, 1180), (232, 226, 210), lfg, "Света   ·   тон 6,5–9")
-d.text((246, 408), "Две линии от одной кучи: светлее влево, гуще вправо", font=f_small, fill=(70, 70, 70))
-
-value_line(500, [
-    ((168, 214, 242), "Блик крыла", "тон 9", "+ белила 1"),
-    ((104, 172, 214), "Свет крыла", "тон 8, база", ""),
-    ((58, 112, 180), "Полоса крыла", "тон 7", "+ ультрамарин 11"),
-], lfg, [(10, 2), (2, 2), (12, 0.25)])
-
-value_line(860, [
-    ((252, 198, 92), "Блик цветка", "тон 8,5", "+ белила 1"),
-    ((226, 136, 40), "Цветок", "тон 7, база", ""),
-    ((214, 96, 28), "Пятна на крыле", "тон 6,5", "+ красный 9"),
-], lfg, [(4, 3), (9, 1), (2, 1)])
-
-mfg = (28, 26, 24)
-zone((390, 1220, 1720, 1580), (190, 168, 142), mfg, "Средние тона   ·   тон 4–6")
-mids = [
-    ((38, 78, 148), "Крыло", [(11, 3), (1, 1), (12, 0.3)]),
-    ((168, 78, 30), "Тень лепестка", [(4, 2), (6, 1.2), (5, 0.5)]),
-    ((118, 58, 30), "Тёплый фон", [(7, 2), (6, 1.5), (4, 0.4)]),
+BANDS = [
+    (360, (232, 226, 210), (30, 30, 30), (80, 80, 80), "Света   ·   тон 6–9"),
+    (900, (190, 168, 142), (28, 26, 24), (60, 52, 44), "Средние   ·   тон 4–6"),
+    (1440, (54, 52, 50), (236, 232, 224), (196, 192, 186), "Тени   ·   тон 1–3"),
 ]
-for i, (col, name, parts) in enumerate(mids):
-    mix(460 + i * 430, 1380, col, name, parts, mfg)
+BAND_H = 520
+for top, bg, fg, _sub, title in BANDS:
+    d.rounded_rectangle((240, top, 1990, top + BAND_H), radius=20, fill=bg)
+    d.text((1990 - 22 - d.textlength(title, font=f_zone), top + 14), title, font=f_zone, fill=fg)
 
-dfg = (236, 232, 224)
-zone((600, 1620, 1960, 1920), (54, 52, 50), dfg, "Тени   ·   тон 1,5–3")
-darks = [
-    ((20, 30, 64), "Край крыла", [(14, 2), (11, 2), (12, 0.3)]),
-    ((26, 28, 42), "Тело", [(14, 2), (11, 1)]),
-    ((46, 30, 32), "Фон", [(14, 3), (7, 1), (8, 0.3)]),
-]
-for i, (col, name, parts) in enumerate(darks):
-    mix(660 + i * 440, 1760, col, name, parts, dfg)
+
+def row(band, i):
+    return BANDS[band][0] + (150 if i == 0 else 385)
+
+
+def colors(band):
+    return BANDS[band][2], BANDS[band][3]
+
+
+WX, BX = 340, 1190
+
+d.text((WX - 60, 300), "Тёплое · сеанс 2, Фон — сеанс 1", font=f_col, fill=(30, 30, 30))
+d.text((BX - 60, 300), "Синее · сеанс 3, Тело и Край крыла — сеанс 1", font=f_col, fill=(30, 30, 30))
+
+for x in (WX - 60, BX - 60):
+    arrow(x, H - 70, 400, (90, 90, 90), width=5, head=20)
+
+# Warm column, bottom to top.
+fg, sub = colors(2)
+pile(WX, row(2, 1), "252024", "Фон", "тон 1,2–1,5 · на холсте 1, 32, 28, 15", fg, sub,
+     [(14, 3), (7, 1), (8, 0.3)], "№ 15 — плюс умбра, до 1,8")
+pile(WX, row(2, 0), "573224", "Тёплый фон", "тон 2,5–3 · на холсте 6, 29, 14, 30", fg, sub,
+     [(7, 2), (6, 1.5), (4, 0.4)])
+fg, sub = colors(1)
+pile(WX, row(1, 1), "8B4718", "Тень лепестка", "тон 3–4,9 · на холсте 4, 23, 31, 10 · 21, 22, 25", fg, sub,
+     [(4, 2), (6, 1.2), (5, 0.5)], "темнее: + тёплый фон, до 3")
+pile(WX, row(1, 0), "CE5E00", "Пятна на крыле", "тон 5,3 · на холсте 2, 13", fg, sub)
+fg, sub = colors(0)
+pile(WX, row(0, 1), "D79D46", "Цветок", "тон 5,8–6,9 · на холсте 19, 12, 26, 5", fg, sub,
+     [(4, 3), (9, 1), (2, 1)], "№ 19 — плюс капля сиены, 5,8")
+pile(WX, row(0, 0), "FFC75B", "Блик цветка", "тон 8,3 · на холсте 27", fg, sub)
+branch(WX, row(0, 1), row(0, 0), "+ белила 1", colors(0)[0])
+branch(WX, row(0, 1), row(1, 0), "+ красный 9", colors(0)[0])
+
+# Blue column, bottom to top.
+fg, sub = colors(2)
+pile(BX, row(2, 1), "121C30", "Тело", "тон 1,0 · на холсте 7, усики и лапки", fg, sub,
+     [(14, 2), (11, 1)])
+pile(BX, row(2, 0), "112E4C", "Край крыла", "тон 1,8 · на холсте 17", fg, sub,
+     [(14, 2), (11, 2), (12, 0.3)])
+fg, sub = colors(1)
+pile(BX, row(1, 1), "005494", "Крыло", "тон 2,7–4,3 · на холсте 8, 11, 20 · 3, 16", fg, sub,
+     [(11, 3), (1, 1), (12, 0.3)], "светлее: + белила 1. № 11 — капля тёплого фона")
+pile(BX, row(1, 0), "007ECC", "Полоса крыла", "тон 5,1 · на холсте 18", fg, sub)
+fg, sub = colors(0)
+pile(BX, row(0, 1), "6196E4", "Свет крыла", "тон 6,2–6,8 · на холсте 9, 24", fg, sub,
+     [(10, 2), (2, 2), (12, 0.25)])
+d.text((BX - 20, row(0, 0) - 40), "Светлее 6,8 на крыле ничего нет — отдельного блика не мешать.",
+       font=f_small, fill=colors(0)[1])
+d.text((BX - 20, row(0, 0) - 14), "Для мастихина: Свет крыла + капля белил.", font=f_small, fill=colors(0)[1])
+branch(BX, row(0, 1), row(1, 0), "+ ультрамарин 11", colors(0)[0])
 
 R = 26
 
@@ -154,9 +179,9 @@ def blob(x, y, n):
 for i in range(9):
     blob(250 + i * 198, 200, i + 1)
 
-for n, y in zip(range(10, 15), [430, 700, 980, 1320, 1700]):
+for n, y in zip(range(10, 15), [470, 760, 1060, 1380, 1760]):
     blob(2125, y, n)
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-mixes.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-columns.jpg")
 img.save(out, quality=93)
 print(out)
