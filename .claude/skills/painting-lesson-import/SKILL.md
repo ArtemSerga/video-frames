@@ -188,7 +188,11 @@ Fetch the series page afterwards and confirm the image is the first content bloc
 
 **Fetch the Notion card «🎨 Организация палитры» first** (`https://app.notion.com/p/0e4e02c622228330a5f901e1513f3a7a`), before drawing a palette scheme or writing `### Замесы` for any work. It is the user's own instruction for how mixes are presented: tube numbers and positions, value zones in the centre, palette rules, and the original of the synced colour wheel. Where it disagrees with this section, the card wins; bring this section in line.
 
-When a work card needs "where the mixes go", draw the user's own palette, not the author's. Template: `painting/works/transparent-wave/palette-mixes.py`. Copy it into the work folder, change the mixes, run with `uv run --no-project --with pillow python palette-mixes.py`. Output is `palette-mixes.jpg` next to the script.
+When a work card needs "where the mixes go", draw the user's own palette, not the author's.
+
+**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
+
+Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion caches external images by URL, so overwriting a published name shows the old picture.
 
 **Layout is the Repin hand palette.** A wooden palette with a thumb hole, held horizontally in the left hand. The left edge is the hole and fingers: nothing goes there.
 
@@ -196,11 +200,21 @@ When a work card needs "where the mixes go", draw the user's own palette, not th
 - Right edge, top to bottom: 10 Cerulean, 11 Ultramarine, 12 Phthalo Blue, 13 Phthalo Green, 14 dark mix (Umber 1 : Ultramarine 1).
 - These numbers are fixed across every scheme. A tube not used in this work is drawn hollow and labelled "не выдавливать".
 
-**The centre is organised by value, top to bottom.** Lights (7–9) next to the whites, middle values (4–6) below, shadows (1.5–3) next to the dark mix in the bottom-right corner. Horizontal position inside a zone carries no meaning. Each zone is titled with its Munsell range.
+**The centre is organised by value, top to bottom.** Three bands: lights next to the whites, middle values below, shadows next to the dark mix in the bottom-right corner. Each band is titled with its Munsell range, set from this work's values. One column per colour family (warm, blue, …), titled with the session that paints it. The column x carries the family; the y carries the value.
 
-**A mix is a large disc with its name; the recipe is small colour circles beside it.** Circle area is proportional to the share of that paint (`r ∝ sqrt(amount)`), tube number under each circle. No numeric ratios in the picture.
+**Think in bases and derived piles, not in a list of recipes.** This is the lesson the scheme teaches. The user wants to learn to see how mixes relate, and the scheme is drawn to make that visible:
 
-**One base, branches in a line.** When several mixes come from one pile (sun, sky, glint from the yellow sky), draw the base in the middle, larger, with its recipe under it. Branches sit on the same line, ordered by value, lighter toward the whites. Arrows carry the addition: `+ белила 1`, `+ охра 5`. Do not draw them as separate recipes.
+- **Two or three bases per work.** The dark mix (position 14) is always one. Each colour family gets one more: its mother colour at full chroma, with no white and no earth. On the butterfly these were the orange base (Cadmium Yellow Hue 3 : Cadmium Red Hue 1) and the blue base (French Ultramarine 3 : Phthalo Blue 0,3). A base is drawn larger, with a gold ring and its recipe. The dark-mix tube on the edge gets the same ring.
+- **Every other pile is derived from a base or from a neighbouring pile, by adding one paint.** It has no recipe of its own. The arrow carries it: a small disc in the parent's colour with its parts, `+`, the added paint's shape with its parts, and the paint name. `2 + 1 сиена` means two parts of the pile above and one part of sienna.
+- **Up the column is white.** Use Zinc for half-lights and Titanium for highlights and for whatever has to cover.
+- **Down the column is a darker paint of the same temperature, not the dark mix.** Orange goes down through sienna, then umber; blue goes down through the dark mix. A warm family darkened with the dark mix turns grey, because the ultramarine in it is the complement. The dark mix enters a warm family only at the very bottom (the background).
+- **A pile in another family's column** is drawn with its recipe as a base, with the root in its name: `Фон · из тёмного замеса`.
+- **A link that skips piles** runs in a side lane, with its label in a dark box.
+- **Mixing order is written in the subtitle:** bases first, then from each base up toward white while the knife is clean, then down. Painting still goes bottom to top.
+
+**Before drawing, fit the chain to the targets.** Take the target hex of every canvas number (trycolors gives them) and grow the chain base → derived piles. Check with a mixing model that each step lands on the value of its numbers; an earlier recipe for "petal shadow" landed on value 6 instead of 3–4.9. A weighted geometric mean of reflectance with a tinting strength per paint, compared in Lab with ΔE94, is enough to choose ratios. It is rough, so the card asks for a test swatch beside the number card. Do not squeeze tubes that the chain does not need. Say in the caption which numbers trycolors mixed with them and what replaced them.
+
+**Paints are marked as on the colour wheel.** The shape is temperature: circle warm, square cold, hexagon cool or neutral. The dark mix is a hexagon. Shapes have equal area, and the number inside is parts. Do not put the tube number under a recipe circle. Tube numbers appear only on the edge blobs, where they are palette positions. The shape key sits at the right of the header.
 
 Labels are Russian (Arial from `/System/Library/Fonts/Supplemental/` — Helvetica has no Cyrillic); code and comments are English. Read the JPEG from disk and fix overlapping labels before committing.
 
@@ -214,7 +228,7 @@ Labels are Russian (Arial from `/System/Library/Fonts/Supplemental/` — Helveti
 		</synced_block_reference>
 	</column>
 	<column ratio="60">
-		![Палитра с замесами](https://raw.githubusercontent.com/USER/video-frames/main/painting/works/WORK/palette-mixes.jpg)
+		![Палитра: базы и что из них выводится](https://raw.githubusercontent.com/USER/video-frames/main/painting/works/WORK/palette-tree.jpg)
 	</column>
 </columns>
 ```
@@ -284,7 +298,7 @@ That is what the card exists for.
 
 **Mixes at the easel are three or four bases, not a numbered table.** The user mixes by eye from the families on the palette. A card that lists 12 puddles will be ignored after the first stage. Lead with the working bases (typically: dark for drawing/shadows, flesh, a colour family for the subject — iris, lips, etc.). Numbered recipes are a calibration chart: how to mix each family the first time, and what value it should hit. They are not 13 wet piles to keep alive at once.
 
-**What is mixed by eye from a base:** lighten with white, darken with the dark pile, warm with ochre/red, cool with a trace of the colour family. Write those as branches (`телесный + капля умбры → полутон 5`), not as new numbered mixes.
+**What is mixed by eye from a base:** lighten with white. Darken with a darker paint of the same temperature (warm with sienna, then umber; cool with the dark pile). Warm with ochre or red; cool with a trace of the colour family. Write those as branches (`телесный + капля умбры → полутон 5`), not as new numbered mixes.
 
 **What is not a branch.** A few spots have their own puddle and must not be mixed from the three bases: the highlight (pure Titanium, last, on a dry surface) and, in an eye, the sclera (Zinc + umber to a neutral grey). Mixing those from flesh or from the blue pile is how they go chalky or sky-blue.
 
