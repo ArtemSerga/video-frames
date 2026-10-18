@@ -18,7 +18,7 @@ f_num = ImageFont.truetype(boldp, 20)
 f_edge = ImageFont.truetype(reg, 17)
 f_small = ImageFont.truetype(reg, 18)
 f_tag = ImageFont.truetype(boldp, 16)
-f_part = ImageFont.truetype(boldp, 15)
+f_part = ImageFont.truetype(boldp, 21)
 
 PAINT = {
     1: ("белила", (246, 246, 242)),
@@ -92,11 +92,11 @@ d.text((40, 76), "Мешаешь базы (жёлтое кольцо), пото�
        "Пишешь снизу вверх.", font=f_sub, fill=(55, 55, 55))
 
 key = [("тёплый", "circle"), ("холодный", "square"), ("нейтральный", "hex"), ("число — части", None)]
-kx = W - 40 - sum(d.textlength(t, font=f_small) + (34 if k else 0) + 30 for t, k in key)
+kx = W - 40 - sum(d.textlength(t, font=f_small) + (44 if k else 0) + 30 for t, k in key)
 for text, kind in key:
     if kind:
-        shape(kind, kx + 14, 88, 13, (200, 200, 200))
-        kx += 34
+        shape(kind, kx + 18, 88, 17, (200, 200, 200))
+        kx += 44
     d.text((kx, 88), text, font=f_small, fill=(55, 55, 55), anchor="lm")
     kx += d.textlength(text, font=f_small) + 30
 
@@ -204,7 +204,7 @@ def link(parent, child, p_parts, paint, a_parts, lane):
         halo_line([(px - pile_radius(parent), py), (lx, py), (lx, cy), (cx - pile_radius(child) - 18, cy)])
         tip = cx - pile_radius(child) - 4
         d.polygon([(tip, cy), (tip - 16, cy - 10), (tip - 16, cy + 10)], fill=(45, 45, 45), outline=(240, 240, 236))
-        lab_x, lab_y = lx - 230, (py + cy) / 2
+        lab_x, lab_y = lx - 256, (py + cy) / 2
     else:
         halo_line([(px, y0), (px, y1)])
         halo_head(px, y1, up)
@@ -212,12 +212,12 @@ def link(parent, child, p_parts, paint, a_parts, lane):
     fg = text_on(lab_y)
     edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
     if lane:
-        d.rounded_rectangle((lab_x - 8, lab_y - 22, lab_x + 210, lab_y + 22), radius=10, fill=(54, 52, 50))
+        d.rounded_rectangle((lab_x - 8, lab_y - 30, lab_x + 236, lab_y + 30), radius=12, fill=(54, 52, 50))
         fg, edge = (236, 232, 224), (215, 215, 215)
-    mark(lab_x + 16, lab_y, 15, "circle", hexrgb(PILES[parent][3]), p_parts, edge)
-    d.text((lab_x + 40, lab_y), "+", font=f_name, fill=fg, anchor="lm")
-    mark(lab_x + 72, lab_y, 15, TEMPERATURE[paint], PAINT[paint][1], a_parts, edge)
-    d.text((lab_x + 94, lab_y), PAINT[paint][0], font=f_small, fill=fg, anchor="lm")
+    mark(lab_x + 22, lab_y, 22, "circle", hexrgb(PILES[parent][3]), p_parts, edge)
+    d.text((lab_x + 52, lab_y), "+", font=f_name, fill=fg, anchor="lm")
+    mark(lab_x + 94, lab_y, 22, TEMPERATURE[paint], PAINT[paint][1], a_parts, edge)
+    d.text((lab_x + 124, lab_y), PAINT[paint][0], font=f_small, fill=fg, anchor="lm")
 
 
 def pile(pid):
@@ -235,9 +235,9 @@ def pile(pid):
         edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
         rx = x + 66
         for key, amount in parts:
-            mark(rx + 21, y + 34, 21, TEMPERATURE[key], PAINT[key][1], amount, edge)
-            rx += 52
-        ny = y + 64
+            mark(rx + 30, y + 44, 30, TEMPERATURE[key], PAINT[key][1], amount, edge)
+            rx += 72
+        ny = y + 86
     if note:
         d.text((x + 66, ny), note, font=f_small, fill=sub)
 
@@ -251,7 +251,7 @@ d.text((BX - 20, slot_y(0, 0) - 40), "Светлее 6,8 на крыле нич�
        font=f_small, fill=BANDS[0][3])
 d.text((BX - 20, slot_y(0, 0) - 14), "Для мастихина: Свет крыла + капля белил.", font=f_small, fill=BANDS[0][3])
 
-R = 26
+R = 32
 
 
 def blob(x, y, n):
@@ -279,6 +279,6 @@ for i in range(9):
 for n, y in zip(range(10, 15), [520, 880, 1260, 1660, 2130]):
     blob(2125, y, n)
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-2.jpg")
 img.save(out, quality=93)
 print(out)
