@@ -2,23 +2,22 @@ import math
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-W, H = 2300, 2420
+W, H = 2400, 3560
 img = Image.new("RGB", (W, H), (236, 230, 218))
 d = ImageDraw.Draw(img)
 
 reg = "/System/Library/Fonts/Supplemental/Arial.ttf"
 boldp = "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
-f_title = ImageFont.truetype(boldp, 40)
-f_sub = ImageFont.truetype(reg, 23)
-f_zone = ImageFont.truetype(boldp, 28)
-f_col = ImageFont.truetype(boldp, 26)
-f_name = ImageFont.truetype(boldp, 25)
-f_line = ImageFont.truetype(reg, 20)
-f_num = ImageFont.truetype(boldp, 20)
-f_edge = ImageFont.truetype(reg, 17)
-f_small = ImageFont.truetype(reg, 18)
-f_tag = ImageFont.truetype(boldp, 16)
-f_part = ImageFont.truetype(boldp, 21)
+f_title = ImageFont.truetype(boldp, 60)
+f_sub = ImageFont.truetype(reg, 34)
+f_zone = ImageFont.truetype(boldp, 42)
+f_col = ImageFont.truetype(boldp, 39)
+f_name = ImageFont.truetype(boldp, 37)
+f_line = ImageFont.truetype(reg, 30)
+f_num = ImageFont.truetype(boldp, 30)
+f_edge = ImageFont.truetype(reg, 25)
+f_small = ImageFont.truetype(reg, 27)
+f_part = ImageFont.truetype(boldp, 30)
 
 PAINT = {
     1: ("белила", (246, 246, 242)),
@@ -66,7 +65,7 @@ def shape_points(kind, x, y, r):
              y + R * math.sin(math.radians(60 * i - 90))) for i in range(6)]
 
 
-def shape(kind, x, y, r, fill, outline=(35, 35, 35), width=2):
+def shape(kind, x, y, r, fill, outline=(35, 35, 35), width=3):
     if kind == "circle":
         d.ellipse((x - r, y - r, x + r, y + r), fill=fill, outline=outline, width=width)
     else:
@@ -87,38 +86,37 @@ def mark(x, y, r, kind, color, amount, outline):
     d.text((x, y), parts_label(amount), font=f_part, fill=ink(color), anchor="mm")
 
 
-d.text((40, 24), "Бабочка: три базы и что из них выводится", font=f_title, fill=(28, 28, 28))
-d.text((40, 76), "Мешаешь базы (жёлтое кольцо), потом идёшь по стрелкам: сначала вверх к белилам, потом вниз. "
+d.text((40, 28), "Бабочка: три базы и что из них выводится", font=f_title, fill=(28, 28, 28))
+d.text((40, 104), "Мешаешь базы (жёлтое кольцо), потом идёшь по стрелкам: сначала вверх к белилам, потом вниз. "
        "Пишешь снизу вверх.", font=f_sub, fill=(55, 55, 55))
 
-key = [("тёплый", "circle"), ("холодный", "square"), ("нейтральный", "hex"), ("число — части", None)]
-kx = W - 40 - sum(d.textlength(t, font=f_small) + (44 if k else 0) + 30 for t, k in key)
-for text, kind in key:
+kx = 40
+for text, kind in [("тёплый", "circle"), ("холодный", "square"), ("нейтральный", "hex"), ("число — части", None)]:
     if kind:
-        shape(kind, kx + 18, 88, 17, (200, 200, 200))
-        kx += 44
-    d.text((kx, 88), text, font=f_small, fill=(55, 55, 55), anchor="lm")
-    kx += d.textlength(text, font=f_small) + 30
+        shape(kind, kx + 24, 182, 24, (200, 200, 200))
+        kx += 60
+    d.text((kx, 182), text, font=f_small, fill=(55, 55, 55), anchor="lm")
+    kx += d.textlength(text, font=f_small) + 46
 
-d.rounded_rectangle((28, 124, W - 28, H - 24), radius=26, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
+d.rounded_rectangle((28, 232, W - 28, H - 24), radius=30, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
 
-hx, hy, hr = 140, 1340, 70
+hx, hy, hr = 130, 1900, 80
 d.ellipse((hx - hr, hy - hr, hx + hr, hy + hr), fill=(236, 230, 218), outline=(70, 70, 70), width=4)
-ctext(hx, hy - 10, "дырка", f_small, (70, 70, 70))
+d.text((hx, hy), "дырка", font=f_small, fill=(70, 70, 70), anchor="mm")
 
-BAND_H = 640
+BAND_L, BAND_R, BAND_H, SLOT = 240, 2040, 970, 300
 BANDS = [
-    (360, (232, 226, 210), (30, 30, 30), (80, 80, 80), "Света   ·   тон 6–9"),
-    (1020, (190, 168, 142), (28, 26, 24), (60, 52, 44), "Средние   ·   тон 3–6"),
-    (1680, (54, 52, 50), (236, 232, 224), (196, 192, 186), "Тени   ·   тон 1–3"),
+    (560, (232, 226, 210), (30, 30, 30), (80, 80, 80), "Света   ·   тон 6–9"),
+    (1550, (190, 168, 142), (28, 26, 24), (60, 52, 44), "Средние   ·   тон 3–6"),
+    (2540, (54, 52, 50), (236, 232, 224), (196, 192, 186), "Тени   ·   тон 1–3"),
 ]
 for top, bg, fg, _sub, title in BANDS:
-    d.rounded_rectangle((240, top, 1990, top + BAND_H), radius=20, fill=bg)
-    d.text((1990 - 22 - d.textlength(title, font=f_zone), top + 14), title, font=f_zone, fill=fg)
+    d.rounded_rectangle((BAND_L, top, BAND_R, top + BAND_H), radius=24, fill=bg)
+    d.text((BAND_R - 26 - d.textlength(title, font=f_zone), top + 18), title, font=f_zone, fill=fg)
 
 
 def slot_y(band, slot):
-    return BANDS[band][0] + 115 + slot * 205
+    return BANDS[band][0] + 175 + slot * SLOT
 
 
 def text_on(y):
@@ -128,9 +126,9 @@ def text_on(y):
     return (25, 25, 25)
 
 
-WX, BX = 340, 1190
-d.text((WX - 60, 300), "Тёплое · сеанс 2, Фон — сеанс 1", font=f_col, fill=(30, 30, 30))
-d.text((BX - 60, 300), "Синее · сеанс 3, Тело и Край — сеанс 1", font=f_col, fill=(30, 30, 30))
+WX, BX = 345, 1300
+d.text((WX - 70, 490), "Тёплое · сеанс 2, Фон — сеанс 1", font=f_col, fill=(30, 30, 30))
+d.text((BX - 70, 490), "Синее · сеанс 3, Тело и Край — сеанс 1", font=f_col, fill=(30, 30, 30))
 
 # id: (column x, band, slot, colour, name, line, base recipe or None, note)
 PILES = {
@@ -167,9 +165,11 @@ LINKS = [
     ("wing", "wing_l", 2, 1, 1, 0),
     ("blue", "edge", 1, 14, 1, 0),
     ("edge", "body", 1, 14, 1, 0),
-    ("blue", "stripe", 1, 10, 10, -78),
+    ("blue", "stripe", 1, 10, 10, -115),
     ("stripe", "light", 2, 2, 1, 0),
 ]
+
+LINK_R = 33
 
 
 def pos(pid):
@@ -178,18 +178,22 @@ def pos(pid):
 
 
 def pile_radius(pid):
-    return 40 if PILES[pid][6] else 32
+    return 60 if PILES[pid][6] else 48
 
 
-def halo_line(points, width=3):
-    d.line(points, fill=(240, 240, 236), width=width + 4, joint="curve")
+def halo_line(points, width=4):
+    d.line(points, fill=(240, 240, 236), width=width + 5, joint="curve")
     d.line(points, fill=(45, 45, 45), width=width, joint="curve")
 
 
 def halo_head(x, y, up):
     s = -1 if up else 1
-    tri = [(x, y), (x - 10, y - s * 16), (x + 10, y - s * 16)]
+    tri = [(x, y), (x - 14, y - s * 22), (x + 14, y - s * 22)]
     d.polygon(tri, fill=(45, 45, 45), outline=(240, 240, 236))
+
+
+def link_label_width(paint):
+    return 4 * LINK_R + 78 + d.textlength(PAINT[paint][0], font=f_small)
 
 
 def link(parent, child, p_parts, paint, a_parts, lane):
@@ -197,27 +201,28 @@ def link(parent, child, p_parts, paint, a_parts, lane):
     cx, cy = pos(child)
     up = cy < py
     s = -1 if up else 1
-    y0 = py + s * (pile_radius(parent) + 4)
-    y1 = cy - s * (pile_radius(child) + 6)
+    y0 = py + s * (pile_radius(parent) + 6)
+    y1 = cy - s * (pile_radius(child) + 8)
     if lane:
         lx = px + lane
-        halo_line([(px - pile_radius(parent), py), (lx, py), (lx, cy), (cx - pile_radius(child) - 18, cy)])
-        tip = cx - pile_radius(child) - 4
-        d.polygon([(tip, cy), (tip - 16, cy - 10), (tip - 16, cy + 10)], fill=(45, 45, 45), outline=(240, 240, 236))
-        lab_x, lab_y = lx - 256, (py + cy) / 2
+        halo_line([(px - pile_radius(parent), py), (lx, py), (lx, cy), (cx - pile_radius(child) - 24, cy)])
+        tip = cx - pile_radius(child) - 6
+        d.polygon([(tip, cy), (tip - 22, cy - 14), (tip - 22, cy + 14)], fill=(45, 45, 45), outline=(240, 240, 236))
+        lab_x, lab_y = lx - link_label_width(paint) - 34, (py + cy) / 2
     else:
         halo_line([(px, y0), (px, y1)])
         halo_head(px, y1, up)
-        lab_x, lab_y = px + 16, (y0 + y1) / 2
+        lab_x, lab_y = px + 22, (y0 + y1) / 2
     fg = text_on(lab_y)
     edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
     if lane:
-        d.rounded_rectangle((lab_x - 8, lab_y - 30, lab_x + 236, lab_y + 30), radius=12, fill=(54, 52, 50))
+        d.rounded_rectangle((lab_x - 12, lab_y - 44, lab_x + link_label_width(paint) + 12, lab_y + 44),
+                            radius=16, fill=(54, 52, 50))
         fg, edge = (236, 232, 224), (215, 215, 215)
-    mark(lab_x + 22, lab_y, 22, "circle", hexrgb(PILES[parent][3]), p_parts, edge)
-    d.text((lab_x + 52, lab_y), "+", font=f_name, fill=fg, anchor="lm")
-    mark(lab_x + 94, lab_y, 22, TEMPERATURE[paint], PAINT[paint][1], a_parts, edge)
-    d.text((lab_x + 124, lab_y), PAINT[paint][0], font=f_small, fill=fg, anchor="lm")
+    mark(lab_x + LINK_R, lab_y, LINK_R, "circle", hexrgb(PILES[parent][3]), p_parts, edge)
+    d.text((lab_x + 2 * LINK_R + 30, lab_y), "+", font=f_name, fill=fg, anchor="mm")
+    mark(lab_x + 3 * LINK_R + 60, lab_y, LINK_R, TEMPERATURE[paint], PAINT[paint][1], a_parts, edge)
+    d.text((lab_x + 4 * LINK_R + 78, lab_y), PAINT[paint][0], font=f_small, fill=fg, anchor="lm")
 
 
 def pile(pid):
@@ -226,20 +231,21 @@ def pile(pid):
     fg, sub = BANDS[band][2], BANDS[band][3]
     r = pile_radius(pid)
     if parts and pid != "bg":
-        d.ellipse((x - r - 9, y - r - 9, x + r + 9, y + r + 9), outline=BASE_RING, width=7)
-    d.ellipse((x - r, y - r, x + r, y + r), fill=hexrgb(hexcol), outline=(30, 30, 30), width=2)
-    d.text((x + 66, y - 46), name, font=f_name, fill=fg)
-    d.text((x + 66, y - 14), line, font=f_line, fill=sub)
-    ny = y + 18
+        d.ellipse((x - r - 14, y - r - 14, x + r + 14, y + r + 14), outline=BASE_RING, width=10)
+    d.ellipse((x - r, y - r, x + r, y + r), fill=hexrgb(hexcol), outline=(30, 30, 30), width=3)
+    tx = x + 100
+    d.text((tx, y - 70), name, font=f_name, fill=fg)
+    d.text((tx, y - 22), line, font=f_line, fill=sub)
+    ny = y + 26
     if parts:
         edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
-        rx = x + 66
+        rx = tx
         for key, amount in parts:
-            mark(rx + 30, y + 44, 30, TEMPERATURE[key], PAINT[key][1], amount, edge)
-            rx += 72
-        ny = y + 86
+            mark(rx + 45, y + 70, 45, TEMPERATURE[key], PAINT[key][1], amount, edge)
+            rx += 108
+        ny = y + 128
     if note:
-        d.text((x + 66, ny), note, font=f_small, fill=sub)
+        d.text((tx, ny), note, font=f_small, fill=sub)
 
 
 for args in LINKS:
@@ -247,38 +253,39 @@ for args in LINKS:
 for pid in PILES:
     pile(pid)
 
-d.text((BX - 20, slot_y(0, 0) - 40), "Светлее 6,8 на крыле ничего нет — отдельного блика не мешать.",
-       font=f_small, fill=BANDS[0][3])
-d.text((BX - 20, slot_y(0, 0) - 14), "Для мастихина: Свет крыла + капля белил.", font=f_small, fill=BANDS[0][3])
+for i, s in enumerate(["Светлее 6,8 на крыле ничего нет —", "отдельного блика не мешать.",
+                       "Для мастихина: Свет крыла + капля белил."]):
+    d.text((BX - 30, slot_y(0, 0) - 80 + i * 38), s, font=f_small, fill=BANDS[0][3])
 
-R = 32
+R = 48
 
 
 def blob(x, y, n):
     name, color = PAINT[n]
     kind = TEMPERATURE[n]
-    if n == 14:
-        d.ellipse((x - R - 12, y - R - 12, x + R + 12, y + R + 12), outline=BASE_RING, width=7)
+    lines = [name]
     if n in HOLLOW:
         shape(kind, x, y, R, None, outline=(40, 40, 40))
-        ctext(x, y - 12, str(n), f_num, (30, 30, 30))
-        ctext(x, y + R + 6, name, f_edge, (25, 25, 25))
-        ctext(x, y + R + 26, "не выдавливать", f_edge, (25, 25, 25))
+        d.text((x, y), str(n), font=f_num, fill=(30, 30, 30), anchor="mm")
+        lines.append("не выдавливать")
     else:
+        if n == 14:
+            d.ellipse((x - R - 16, y - R - 16, x + R + 16, y + R + 16), outline=BASE_RING, width=10)
+            lines += ["база: умбра 1 :", "ультрамарин 1", "тон 1,5–2"]
         shape(kind, x, y, R, color)
-        ctext(x, y - 12, str(n), f_num, ink(color))
-        ctext(x, y + R + 12 if n == 14 else y + R + 6, name, f_edge, (25, 25, 25))
-    if n == 14:
-        ctext(x, y + R + 32, "база: умбра 1 : ультрамарин 1", f_edge, (25, 25, 25))
-        ctext(x, y + R + 52, "тон 1,5–2", f_edge, (25, 25, 25))
+        d.text((x, y), str(n), font=f_num, fill=ink(color), anchor="mm")
+    ty = y + R + (24 if n == 14 else 10)
+    for s in lines:
+        ctext(x, ty, s, f_edge, (25, 25, 25))
+        ty += 31
 
 
 for i in range(9):
-    blob(250 + i * 198, 200, i + 1)
+    blob(300 + i * 215, 330, i + 1)
 
-for n, y in zip(range(10, 15), [520, 880, 1260, 1660, 2130]):
-    blob(2125, y, n)
+for n, y in zip(range(10, 15), [760, 1300, 1900, 2560, 3170]):
+    blob(2210, y, n)
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-2.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-3.jpg")
 img.save(out, quality=93)
 print(out)

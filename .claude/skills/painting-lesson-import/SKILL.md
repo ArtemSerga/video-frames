@@ -190,7 +190,7 @@ Fetch the series page afterwards and confirm the image is the first content bloc
 
 When a work card needs "where the mixes go", draw the user's own palette, not the author's.
 
-**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
+**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-3.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
 
 Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion caches external images by URL, so overwriting a published name shows the old picture.
 
@@ -214,7 +214,19 @@ Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion cach
 
 **Before drawing, fit the chain to the targets.** Take the target hex of every canvas number (trycolors gives them) and grow the chain base → derived piles. Check with a mixing model that each step lands on the value of its numbers; an earlier recipe for "petal shadow" landed on value 6 instead of 3–4.9. A weighted geometric mean of reflectance with a tinting strength per paint, compared in Lab with ΔE94, is enough to choose ratios. It is rough, so the card asks for a test swatch beside the number card. Do not squeeze tubes that the chain does not need. Say in the caption which numbers trycolors mixed with them and what replaced them.
 
-**Paints are marked as on the colour wheel.** The shape is temperature: circle warm, square cold, hexagon cool or neutral. The dark mix is a hexagon. Shapes have equal area, and the number inside is parts. Do not put the tube number under a recipe circle. Tube numbers appear only on the edge blobs, where they are palette positions. The shape key sits at the right of the header.
+**Paints are marked as on the colour wheel.** The shape is temperature: circle warm, square cold, hexagon cool or neutral. The dark mix is a hexagon. Shapes have equal area, and the number inside is parts. Do not put the tube number under a recipe circle. Tube numbers appear only on the edge blobs, where they are palette positions. The shape key sits on its own line under the subtitle.
+
+**Size for reading in Notion, not on disk.** Notion shrinks the image to its column width, so only size relative to the canvas width counts. Making the canvas wider makes everything smaller on screen. The user asked twice for bigger marks and text; these are the minimums on the 2400 px wide reference:
+
+| Element | Size |
+|---|---|
+| Pile swatch | radius 48 px; a base, 60 px with a 10 px gold ring |
+| Recipe marks under a base | radius 45 px, 108 px apart |
+| Arrow marks | radius 33 px |
+| Edge tubes | radius 48 px |
+| Text | title 60, column and band titles 39–42, pile name 37, value line 30, notes and labels 27, numbers inside marks 30 (px) |
+
+Grow downward: slots 300 px apart, bands about 970 px high. A tall image is fine; a wide one is not. Break any line that would run past the band edge, rather than shrinking the font.
 
 Labels are Russian (Arial from `/System/Library/Fonts/Supplemental/` — Helvetica has no Cyrillic); code and comments are English. Read the JPEG from disk and fix overlapping labels before committing.
 
