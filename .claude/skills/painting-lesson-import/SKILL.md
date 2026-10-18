@@ -190,20 +190,20 @@ Fetch the series page afterwards and confirm the image is the first content bloc
 
 When a work card needs "where the mixes go", draw the user's own palette, not the author's.
 
-**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-6.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
+**Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-7.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
 
 Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion caches external images by URL, so overwriting a published name shows the old picture.
 
 **The image is A4 portrait, 1 : 1.414 (2400 × 3394 px).** The user asked for a standard A4 proportion after a 1 : 1.48 version would not fit the screen. Fit the content to that frame; do not let the height grow past it.
 
-**The header is the title, the shape key, and the tube row.** No subtitle: the user removed "Мешаешь базы…". No thumb hole and no tubes on the side edges: the user asked to remove both.
+**The header is the title and the tube row.** No shape key: the user knows the shapes and asked to remove it. No subtitle: the user removed "Мешаешь базы…". No thumb hole and no tubes on the side edges: the user asked to remove both.
 
 **No paint-by-numbers or trycolors numbers in the scheme.** The user does not use trycolors and does not want the scheme tied to a kit's numbers: no "на холсте 4, 23", no "№ 11 — …", no "номера нет". A pile's line is its value plus, where the name does not say it, where it goes on the painting (`тон 5,8–6,9 · лепестки на свету`). Notes say where in words (`у цветов: + умбра`, `сероватое: + тёплый фон`).
 
 - Left group, warm and whites: 1 Titanium, 2 Zinc, 3 Lemon, 4 Cadmium Yellow Hue, 5 Ochre, 6 Sienna, 7 Umber, 8 Alizarin, 9 Cadmium Red Hue.
 - A vertical divider, then the cold group: 10 Cerulean, 11 Ultramarine, 12 Phthalo Blue, 13 Phthalo Green.
 - A tube name wider than about 150 px goes on two lines ("кадм." / "жёлтый"). Tubes are packed by label width and the slack is spread evenly, so neighbouring labels do not touch.
-- These numbers are fixed across every scheme. A tube not used in this work is drawn hollow; the shape key carries one entry "пустая — не выдавливать" instead of a label under each hollow tube.
+- These numbers are fixed across every scheme. A tube not used in this work is drawn hollow, with no label explaining it.
 - **The dark mix (14) is not a tube.** It is a base pile in the mix zone: its own column, "Тёмное · сеанс 1", in the shadows band at its own value (1,5–2), with its gold ring and recipe (Umber 1 : Ultramarine 1). A background pile darker than it hangs below it; a lighter one stands above it, linked by a side lane.
 
 **The centre is organised by value, top to bottom.** One column per colour family (warm, dark, blue, …), titled with the session that paints it. The column x carries the family; the y carries the value. Three bands, titled with their Munsell range: lights (6 and up), middle (3–6), shadows (below 3).
@@ -223,7 +223,7 @@ Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion cach
 
 **Before drawing, fit the chain to the targets.** Sample the target colours from the original image, one per area that needs its own pile, and grow the chain base → derived piles. Check with a mixing model that each step lands on the value of its area; an earlier recipe for "petal shadow" landed on value 6 instead of 3–4.9. A weighted geometric mean of reflectance with a tinting strength per paint, compared in Lab with ΔE94, is enough to choose ratios. It is rough, so the card asks for a test swatch. Do not squeeze tubes that the chain does not need.
 
-**Paints are marked as on the colour wheel.** The shape is temperature: circle warm, square cold, hexagon cool or neutral. The dark mix is a hexagon. Shapes have equal area, and the number inside is parts. Do not put the tube number under a recipe circle. Tube numbers appear only on the header tubes, where they are palette positions. The shape key sits on its own line under the title.
+**Paints are marked as on the colour wheel.** The shape is temperature: circle warm, square cold, hexagon cool or neutral. The dark mix is a hexagon. Shapes have equal area, and the number inside is parts. Do not put the tube number under a recipe circle. Tube numbers appear only on the header tubes, where they are palette positions. The shapes are not explained on the image.
 
 **Size for reading in Notion, not on disk.** Notion shrinks the image to its column width, so only size relative to the canvas width counts. Making the canvas wider makes everything smaller on screen. The user asked three times for bigger marks and text, the last time for the small text alone; these are the minimums on the 2400 px wide reference:
 
@@ -233,7 +233,7 @@ Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion cach
 | Recipe marks under a base | radius 45 px, 108 px apart |
 | Arrow marks | radius 33 px |
 | Header tubes | radius 48 px, packed by label width, 70 px extra at the divider |
-| Text | title 60, column and band titles 42, pile name 44, value line 40, notes, arrow labels and the shape key 40, tube names 37, numbers inside marks 30 (px) |
+| Text | title 60, column and band titles 42, pile name 44, value line 40, notes and arrow labels 40, tube names 37, numbers inside marks 30 (px) |
 
 Inside the A4 frame: bands from x 60 to 2340 with 15 px gaps, their heights derived from the piles; three columns at x 170 / 820 / 1640 (warm, dark, blue). The spacing between piles is padded evenly until the bottom band reaches the frame. Keep lines short (value plus a few words), because at 40 px a long note runs into the next column. Keep a pile's text out of the next column and out of side lanes. Shorten or break a line that would run into them, rather than shrinking the font.
 

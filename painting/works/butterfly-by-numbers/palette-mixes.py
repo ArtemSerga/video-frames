@@ -87,23 +87,10 @@ def mark(x, y, r, kind, color, amount, outline):
 
 d.text((40, 28), "Бабочка: три базы и что из них выводится", font=f_title, fill=(28, 28, 28))
 
-kx = 40
-LEGEND_Y = 132
-for text, kind in [("тёплый", "circle"), ("холодный", "square"), ("нейтральный", "hex"),
-                   ("число — части", None), ("пустая — не выдавливать", "hollow")]:
-    if kind == "hollow":
-        shape("square", kx + 24, LEGEND_Y, 24, None, outline=(40, 40, 40))
-        kx += 60
-    elif kind:
-        shape(kind, kx + 24, LEGEND_Y, 24, (200, 200, 200))
-        kx += 60
-    d.text((kx, LEGEND_Y), text, font=f_small, fill=(55, 55, 55), anchor="lm")
-    kx += d.textlength(text, font=f_small) + 46
-
-d.rounded_rectangle((28, 184, W - 28, H - 24), radius=30, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
+d.rounded_rectangle((28, 110, W - 28, H - 24), radius=30, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
 
 R = 48
-TUBE_Y = 262
+TUBE_Y = 188
 
 
 def tube_lines(n):
@@ -146,11 +133,11 @@ for i, n in enumerate(TUBES):
 
 WX, DX, BX = 170, 820, 1640
 BAND_L, BAND_R = 60, 2340
-FIRST_BAND_TOP = 560
-d.text((WX - 70, 440), "Тёплое · сеанс 2", font=f_col, fill=(30, 30, 30))
-d.text((DX - 70, 440), "Тёмное · сеанс 1", font=f_col, fill=(30, 30, 30))
-d.text((BX - 70, 440), "Синее · сеанс 3", font=f_col, fill=(30, 30, 30))
-d.text((BX - 70, 494), "Тело и Край — сеанс 1", font=f_small, fill=(55, 55, 55))
+FIRST_BAND_TOP = 486
+d.text((WX - 70, 366), "Тёплое · сеанс 2", font=f_col, fill=(30, 30, 30))
+d.text((DX - 70, 366), "Тёмное · сеанс 1", font=f_col, fill=(30, 30, 30))
+d.text((BX - 70, 366), "Синее · сеанс 3", font=f_col, fill=(30, 30, 30))
+d.text((BX - 70, 420), "Тело и Край — сеанс 1", font=f_small, fill=(55, 55, 55))
 
 # id: (column x, value used for height, colour, name, line, base recipe or None, note)
 PILES = {
@@ -363,6 +350,6 @@ for i, s in enumerate(["Светлее 6,8 на крыле нет —", "отд�
                        "Мастихин: Свет крыла + белила."]):
     d.text((BX - 30, BANDS[0][0] + 85 + i * 48), s, font=f_small, fill=BANDS[0][4])
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-6.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-7.jpg")
 img.save(out, quality=93)
 print(out, "pad", pad)
