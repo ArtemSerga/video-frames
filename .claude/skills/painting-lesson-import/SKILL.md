@@ -386,6 +386,10 @@ yt-dlp --flat-playlist --print "%(playlist_index)s %(id)s %(duration)s %(title)s
 
 **SQL returns properties only**, not page content. Use `notion-fetch` by id for the body.
 
+### The `Оригинал` property of a work
+
+For a card in «🪧 Работы», put the clean final frame (`reference.jpg`, pushed to the repository) into `Оригинал`. Upload it with `notion-create-attachment`, `source_url` set to its `raw.githubusercontent.com` address and a `filename` such as `cake-final.jpg`, then pass the returned id with `update_properties`: `{"Оригинал": [{"type": "file_upload", "file_upload": {"id": "…"}}]}`. An unattached upload expires within the hour, so set the property straight away. If `Оригинал` already holds a file, it is the user's own: leave it and ask before replacing it.
+
 ### Images by external link
 
 Notion **caches the image on its side** while keeping the external address in the markup. Overwriting a file under the same name has no effect — Notion never learns it changed.
