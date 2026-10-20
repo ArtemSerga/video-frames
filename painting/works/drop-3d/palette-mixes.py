@@ -33,10 +33,13 @@ PAINT = {
     12: ("фтало синий", (16, 40, 110)),
     13: ("фтало зелёный", (0, 92, 72)),
     14: ("тёмный замес", (28, 30, 40)),
-    15: ("медиум", (236, 224, 188)),
-    16: ("сушащий", (206, 190, 142)),
-    17: ("импасто", (250, 248, 238)),
+    15: ("painting", (236, 224, 188)),
+    16: ("fast drying", (206, 190, 142)),
+    17: ("impasto", (250, 248, 238)),
 }
+
+# Artisan mediums by letter; "2P" is two parts of Painting Medium.
+MEDIUM_CODE = {15: "P", 16: "F", 17: "I"}
 
 # Tubes this palette does not squeeze; drawn hollow.
 HOLLOW = {6, 8, 10, 12, 13}
@@ -88,9 +91,14 @@ def parts_label(amount):
     return f"{amount:g}".replace(".", ",")
 
 
+def part_text(key, amount):
+    code = MEDIUM_CODE.get(key, "") if isinstance(key, int) else ""
+    return parts_label(amount) + code
+
+
 def mark(x, y, r, kind, color, amount, outline):
     shape(kind, x, y, r, color, outline=outline)
-    d.text((x, y), parts_label(amount), font=f_part, fill=ink(color), anchor="mm")
+    d.text((x, y), amount if isinstance(amount, str) else parts_label(amount), font=f_part, fill=ink(color), anchor="mm")
 
 
 d.text((40, 28), "Капля: четыре базы, что из них выводится и сколько · A6", font=f_title, fill=(28, 28, 28))
@@ -122,7 +130,7 @@ def blob(x, y, n):
         return
     else:
         shape(kind, x, y, R, color)
-        d.text((x, y), str(n), font=f_num, fill=ink(color), anchor="mm")
+        d.text((x, y), MEDIUM_CODE.get(n, str(n)), font=f_num, fill=ink(color), anchor="mm")
     ty = y + R + 8
     for s in tube_lines(n):
         ctext(x, ty, s, f_edge, (25, 25, 25))
@@ -157,14 +165,14 @@ PILES = {
     "rim": (WX, 6.0, "AE8C62", "Рыжий край", "тон 6 · правый край", "0,3 мл", None, None, None, []),
     "flash": (DX, 9.9, "FAFCF8", "Блик", "тон 9,9 · рельефом", "0,2 мл", None, [(1, 3), (17, 1)], None, []),
     "canvas": (DX, 6.8, "AAA497", "Холст", "тон 6,8 · фон", "2,1 мл", [(1, 5), (5, 3), (11, 1)], None,
-               (16, 3, 1, "0,5 мл"), ["накануне: 1,5 мл с сушащим", "утром: ещё 0,6 мл без него"]),
+               (16, 3, 1, "0,5 мл"), ["накануне: 1,5 мл с F", "утром: ещё 0,6 мл без F"]),
     "umber": (DX, 2.5, "4E3628", "Умбра", "тон 2,5 · рисунок", "0,4 мл", [(7, 1)], None,
               (15, 1, 1, "0,4 мл"), []),
     "core": (DX, 2.0, "34271C", "Ядро тени", "тон 1,7–2 · касание", "0,3 мл", None, None, None, []),
     "reflex": (BX, 7.8, "C2C4C4", "Рефлекс", "тон 7,8 · левый край", "0,3 мл", None, None, None,
-               ["кроет, без медиума"]),
+               ["кроет, без P"]),
     "lav": (BX, 6.2, "98959E", "Лаванда", "тон 6,2 · дымка", "0,45 мл", [(2, 18), (7, 2), (11, 1)], None,
-            (15, 1, 2, "0,3 мл"), ["медиум — после отбора"]),
+            (15, 1, 2, "0,3 мл"), ["P — после отбора"]),
     "bluegrey": (BX, 6.1, "929690", "Серо-голубой", "тон 6,1 · шейка", "0,1 мл", None, None,
                  (15, 1, 2, "0,2 мл"), []),
     "grey": (BX, 4.5, "6A6D66", "Серый край", "тон 4,5 · края шейки", "0,3 мл", None, None, None, []),
@@ -295,7 +303,7 @@ def halo_head(x, y, up):
 def added_look(p):
     if isinstance(p, str):
         return LABEL.get(p, PILES[p][3]), "circle", hexrgb(PILES[p][2])
-    return PAINT[p][0], TEMPERATURE[p], PAINT[p][1]
+    return ("" if p in MEDIUM_CODE else PAINT[p][0]), TEMPERATURE[p], PAINT[p][1]
 
 
 def link_label_width(added):
@@ -336,7 +344,7 @@ def link(parent, child, p_parts, added, lane, side):
     for paint, a_parts in added:
         name, kind, colour = added_look(paint)
         d.text((x + 24, lab_y), "+", font=f_name, fill=fg, anchor="mm")
-        mark(x + 48 + LINK_R, lab_y, LINK_R, kind, colour, a_parts, edge)
+        mark(x + 48 + LINK_R, lab_y, LINK_R, kind, colour, part_text(paint, a_parts), edge)
         x += 48 + 2 * LINK_R + 12
         d.text((x, lab_y), name, font=f_small, fill=fg, anchor="lm")
         x += d.textlength(name, font=f_small)
@@ -361,9 +369,9 @@ def mix_row(x, y, items, fg, edge, tail=None):
             d.text((x + 24, y), "+", font=f_name, fill=fg, anchor="mm")
             x += 48
         name, kind, colour = added_look(key)
-        mark(x + LINK_R, y, LINK_R, kind, colour, parts, edge)
+        mark(x + LINK_R, y, LINK_R, kind, colour, part_text(key, parts), edge)
         x += 2 * LINK_R
-        if named:
+        if named and name:
             d.text((x + 12, y), name, font=f_small, fill=fg, anchor="lm")
             x += 12 + d.textlength(name, font=f_small)
     if tail:
@@ -419,6 +427,6 @@ for i, s in enumerate(["Тёмные капли — лессировка:", "б�
                        "Больше медиума — светлее,", "сквозь неё виден холст."]):
     d.text((DX - 30, BANDS[1][0] + 85 + i * 48), s, font=f_small, fill=BANDS[1][4])
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-5.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-6.jpg")
 img.save(out, quality=93)
 print(out, "pad", pad)

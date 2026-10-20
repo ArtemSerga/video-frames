@@ -201,7 +201,7 @@ When a work card needs "where the mixes go", draw the user's own palette, not th
 - under every pile's circle in the scheme, small and red like the tube volumes, so the user knows how big each pile is;
 - in a `### Выдавить` list on the card, with the 37 ml tube conversion: 1 cm of paint ≈ 0.3 ml. Split the list into «Накануне» and «В день сеанса» when there is an imprimatura.
 
-**Mediums live inside the palette scheme, never as a side note.** Each medium the plan uses is a tube in the header with its ml: «медиум» (Painting), «сушащий» (Fast Drying), «импасто» (Impasto). A pile that takes a medium gets its own row under it: the pile's mark + the medium's mark with parts, then «+ N мл». When the medium is part of a derivation, it goes in the link label like any paint (dark mix 1 + medium 1 → shadow). Piles derived from a pile in another column get their recipe drawn as marks, not written as text. Reference: `painting/works/drop-3d/palette-tree-5.jpg`.
+**Mediums live inside the palette scheme, never as a side note.** Each medium the plan uses is a tube in the header with its letter inside, its English name under it and its ml. A pile that takes a medium gets its own row under it: the pile's mark + the medium's mark labelled with parts and letter (`2P`), then «+ N мл». When the medium is part of a derivation, it goes in the link label like any paint (dark mix 1 + 1P → shadow). Piles derived from a pile in another column get their recipe drawn as marks, not written as text. Reference: `painting/works/drop-3d/palette-tree-6.jpg`.
 
 **Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-10.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
 
@@ -363,7 +363,9 @@ That is what the card exists for.
 
 **A mix named inside a stage block always carries its recipe in brackets** — `Замес: №2 (Burnt Umber 3 : Cadmium Red Hue 1)`, or better, the base plus the branch: `телесный + умбра до 5`. The number alone sends the reader back up to the table, which is exactly what cannot happen with a brush in hand.
 
-**Medium: inside the recipe, never a separate column.** A mix that takes a medium names it with its parts, like any paint: `Умбра (Burnt Umber 1 : Painting Medium 1)`, `Блик (Titanium White 3 : Impasto Medium 1)`. A mix without one goes on thick from the tube; the stage text says so where it matters. The palette scheme shows the same thing as medium marks. The user asked for this on 20.10.2026; before that, medium was its own column.
+**Mediums are letters, the user's notation (20.10.2026):** P — Artisan Painting Medium, F — Fast Drying Medium, I — Impasto Medium, T — Thinner. The number in front is parts: `3F` is three parts Fast Drying. Use the letters in recipes, in the scheme and in the card's `Медиум и пропорция`; spell the full name once, in the card's `### Выдавить` list, as `Artisan Painting Medium (P)`.
+
+**Medium: inside the recipe, never a separate column.** A mix that takes a medium carries it with its parts, like any paint: `Умбра (Burnt Umber 1 : 1P)`, `Блик (Titanium White 3 : 1I)`. A mix without one goes on thick from the tube; the stage text says so where it matters. The palette scheme shows the same thing as medium marks. The user asked for this on 20.10.2026; before that, medium was its own column.
 
 ---
 
