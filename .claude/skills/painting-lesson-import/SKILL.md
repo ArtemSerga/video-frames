@@ -382,7 +382,7 @@ yt-dlp --flat-playlist --print "%(playlist_index)s %(id)s %(duration)s %(title)s
 
 **`update_content` can take neighbouring blocks with it.** A batch of small, individually correct replacements removed everything that followed the last edited block — a heading, a transcript and three uploaded images. Nothing warns you: the call returns only the page id. So after *every* content edit, fetch the whole page and check the tail, not just the region you touched. Notion-hosted images cannot be restored through the API — `download-attachment` only reads text files this integration uploaded — so recovery means the user opening Page history.
 
-**Never leave the user's own material below your card on the same page.** Pre-existing transcripts, uploads and notes belong on a separate page linked from the card, or the card goes below them. Anything sitting after your last block is in the blast radius of the next edit.
+**Never leave the user's own material below your card on the same page.** Pre-existing transcripts, uploads and notes belong on a separate page linked from the card, or the card goes below them. Anything sitting after your last block is in the blast radius of the next edit. The one block that goes above everything is the result review (see "A photo of the result"). It is inserted at the start and edited only in place.
 
 **A markdown table becomes a Notion block on write.** Its rows stop being text and `update_content` will not match them. Edit cells only after re-reading the page, against the actual `<td>` markup.
 
@@ -400,15 +400,37 @@ When the user sends a photo of their finished painting for a work, do all of thi
 2. **`Дата`** is today's date, `date:Дата:start` in ISO form.
 3. **`Статус`** is `Готово`.
 4. **`Что вышло` and `Что в следующий раз`** come from the user's comments plus your own reading of the photo, paraphrased in Russian. Measure values on the photo, Munsell 0–10, before writing anything about them. Say they are photo values: exposure shifts them all, so compare them with each other and with the plan, not as absolutes.
-5. **A result table goes in the body.** Append it at the very end of the page, under the heading `# Разбор результата`. Each row is a place on the canvas, using the zone names of the stage table (the object in light, its own shadow, the cast shadow, the background, the contour, details). The columns are `Место`, `Хорошо`, `Плохо`, `Как улучшить`. A cell may be `—` when there is nothing to say. `Как улучшить` names a concrete action: a pile, a brush or a target value, never "be more careful". Use `header-row="true"` and `header-column="true"`.
+5. **A result review opens the page.** It always goes at the very top of the content, above the user's material and above the lesson breakdown: `insert_content` with `position: {"type": "start"}`. Under the heading `# Разбор результата` comes one line saying the values were measured on a photo, then a three-column block followed by a `---` divider:
+   - **Left column, ratio 55: the table.** Each row is a place on the canvas, using the zone names of the stage table (the object in light, its own shadow, the cast shadow, the background, the contour, details). The columns are `Место`, `Хорошо`, `Плохо`, `Как улучшить`. A cell may be `—` when there is nothing to say. `Как улучшить` names a concrete action: a pile, a brush or a target value, never "be more careful". Use `header-row="true"` and `header-column="true"`.
+   - **Middle column, ratio 22.5: `**Оригинал**` and its image.** When the property holds our `reference.jpg`, link the `raw.githubusercontent.com` file. When it holds the user's own file, copy it: fetch the page, then pass the signed S3 link from the property to `notion-create-attachment` within its five minutes.
+   - **Right column, ratio 22.5: `**Результат**` and the photo.** It needs a second `notion-create-file-upload` of the same local file. An upload attached to the property is not reused in the body.
+   
+   Body images from an upload are written as `<image src="file-upload://…"></image>`. Set them before the hour runs out.
+   
+   If the page already has a review, replace it in place. Remove the old block with `update_content` before inserting the new one at the start. Otherwise the same table text matches twice.
 
-Then fetch the page and check the tail and the properties.
+Then fetch the page and check the head, the tail and the properties.
 
 ```
-<table fit-page-width="true" header-row="true" header-column="true">
+# Разбор результата
+Тона сняты с фото (шкала 0–10): …
+<columns>
+	<column ratio="55">
+		<table fit-page-width="true" header-row="true" header-column="true">
 <tr><td>Место</td><td>Хорошо</td><td>Плохо</td><td>Как улучшить</td></tr>
 <tr><td>Своя тень лимона</td><td>…</td><td>…</td><td>…</td></tr>
-</table>
+		</table>
+	</column>
+	<column ratio="22.5">
+		**Оригинал**
+		<image src="file-upload://…"></image>
+	</column>
+	<column ratio="22.5">
+		**Результат**
+		<image src="file-upload://…"></image>
+	</column>
+</columns>
+---
 ```
 
 ### Images by external link
