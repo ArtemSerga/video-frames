@@ -33,6 +33,7 @@ PAINT = {
     12: ("фтало синий", (16, 40, 110)),
     13: ("фтало зелёный", (0, 92, 72)),
     14: ("тёмный замес", (28, 30, 40)),
+    15: ("медиум", (236, 224, 188)),
 }
 
 # Tubes this palette does not squeeze; drawn hollow.
@@ -46,6 +47,7 @@ BASE_RING = (226, 170, 40)
 TEMPERATURE = {
     1: "hex", 2: "hex", 3: "square", 4: "circle", 5: "circle", 6: "circle", 7: "hex",
     8: "square", 9: "circle", 10: "square", 11: "circle", 12: "square", 13: "square", 14: "hex",
+    15: "hex",
 }
 
 
@@ -147,14 +149,14 @@ PILES = {
     "rim": (WX, 6.0, "AE8C62", "Рыжий край", "тон 6 · правый край", None, None),
     "flash": (DX, 9.9, "FAFCF8", "Блик", "тон 9,9 · белила, густо", None, None),
     "canvas": (DX, 6.8, "AAA497", "Холст", "тон 6,8 · тонировка", [(1, 5), (5, 3), (11, 1)], "с водой — втереть"),
-    "umber": (DX, 2.5, "4E3628", "Умбра", "тон 2,5 · рисунок, хвост", [(7, 1)], "жидко — хвост светлее"),
+    "umber": (DX, 2.5, "4E3628", "Умбра", "тон 2,5 · рисунок, хвост", [(7, 1)], "медиум 1 : 1 — лессировка"),
     "core": (DX, 2.0, "34271C", "Ядро тени", "тон 1,7–2 · у касания", None, None),
-    "dark": (DX, 1.75, "1C1E28", "Тёмный замес", "тон 1,5–2 · в ядро и серые", [(7, 1), (11, 1)], "до нейтрального"),
-    "reflex": (BX, 7.8, "C2C4C4", "Рефлекс", "тон 7,8 · левый край", None, None),
+    "reflex": (BX, 7.8, "C2C4C4", "Рефлекс", "тон 7,8 · левый край", None, "кроет, без медиума"),
     "lav": (BX, 6.2, "98959E", "Лаванда", "тон 6,2 · дымка сверху", None, "из холста: 12 + 1 ультрам."),
-    "bluegrey": (BX, 6.1, "929690", "Серо-голубой", "тон 6,1 · шейка", None, None),
+    "bluegrey": (BX, 6.1, "929690", "Серо-голубой", "тон 6,1 · шейка", None, "обе: медиум 1 : 2 — вуаль"),
     "grey": (BX, 4.5, "6A6D66", "Серый край", "тон 4,5 · края шейки", None, None),
     "dshade": (BX, 2.7, "343932", "Тень капли", "тон 2,5–3 · левый бок", None, None),
+    "dark": (BX, 1.75, "1C1E28", "Тёмный замес", "тон 1,5–2 · без белил", [(7, 1), (11, 1)], "до нейтрального"),
 }
 
 # A pile added to another pile is drawn as its own colour with this short name.
@@ -174,8 +176,8 @@ LINKS = [
     ("umber", "core", 2, [("dark", 1)], 0, None),
     ("lav", "reflex", 1, [(1, 1)], 0, None),
     ("lav", "bluegrey", 20, [(3, 1)], 0, None),
-    ("bluegrey", "grey", 2, [("dark", 1)], 0, None),
-    ("grey", "dshade", 1, [("dark", 1)], 0, None),
+    ("dark", "dshade", 1, [(15, 1)], 0, None),
+    ("dshade", "grey", 1, [(15, 2)], 0, None),
 ]
 
 BAND_STYLE = [
@@ -365,11 +367,10 @@ for args in LINKS:
 for pid in PILES:
     pile(pid)
 
-for i, s in enumerate(["Капля прозрачная: её серые —", "это цвет холста + одна краска.",
-                       "Холст замешиваю первым и",
-                       "сверяю мазком с тонировкой."]):
+for i, s in enumerate(["Тёмные капли — лессировка:", "без белил, тон даёт медиум.",
+                       "Больше медиума — светлее,", "сквозь неё виден холст."]):
     d.text((DX - 30, BANDS[1][0] + 85 + i * 48), s, font=f_small, fill=BANDS[1][4])
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-1.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-2.jpg")
 img.save(out, quality=93)
 print(out, "pad", pad)
