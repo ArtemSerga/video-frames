@@ -34,20 +34,23 @@ PAINT = {
     13: ("фтало зелёный", (0, 92, 72)),
     14: ("тёмный замес", (28, 30, 40)),
     15: ("медиум", (236, 224, 188)),
+    16: ("сушащий", (206, 190, 142)),
+    17: ("импасто", (250, 248, 238)),
 }
 
 # Tubes this palette does not squeeze; drawn hollow.
 HOLLOW = {2, 6, 8, 10, 12, 13}
 
-# Millilitres to squeeze for an A6 canvas: thin darks, thick lights.
-ML = {1: "3 мл", 3: "след", 4: "0,2 мл", 5: "1,5 мл", 7: "0,7 мл", 9: "след", 11: "0,7 мл"}
+# Millilitres for an A6 canvas, the day before and the sitting together.
+ML = {1: "2,1 мл", 3: "след", 4: "0,1 мл", 5: "0,9 мл", 7: "0,6 мл", 9: "след", 11: "0,5 мл",
+      15: "1,5 мл", 16: "0,5 мл", 17: "след"}
 BASE_RING = (226, 170, 40)
 
 # Same code as the colour wheel: circle warm, square cold, hexagon cool or neutral.
 TEMPERATURE = {
     1: "hex", 2: "hex", 3: "square", 4: "circle", 5: "circle", 6: "circle", 7: "hex",
     8: "square", 9: "circle", 10: "square", 11: "circle", 12: "square", 13: "square", 14: "hex",
-    15: "hex",
+    15: "hex", 16: "hex", 17: "hex",
 }
 
 
@@ -90,7 +93,7 @@ def mark(x, y, r, kind, color, amount, outline):
     d.text((x, y), parts_label(amount), font=f_part, fill=ink(color), anchor="mm")
 
 
-d.text((40, 28), "Капля: три базы и что из них выводится · A6", font=f_title, fill=(28, 28, 28))
+d.text((40, 28), "Капля: три базы, что из них выводится и сколько · A6", font=f_title, fill=(28, 28, 28))
 
 d.rounded_rectangle((28, 110, W - 28, H - 24), radius=30, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
 
@@ -104,6 +107,8 @@ def tube_lines(n):
 
 
 def tube_width(n):
+    if n in HOLLOW:
+        return 2 * R
     return max(2 * R, max(d.textlength(s, font=f_edge) for s in tube_lines(n)))
 
 
@@ -113,6 +118,7 @@ def blob(x, y, n):
     if n in HOLLOW:
         shape(kind, x, y, R, None, outline=(40, 40, 40))
         d.text((x, y), str(n), font=f_num, fill=(30, 30, 30), anchor="mm")
+        return
     else:
         shape(kind, x, y, R, color)
         d.text((x, y), str(n), font=f_num, fill=ink(color), anchor="mm")
@@ -124,43 +130,50 @@ def blob(x, y, n):
         ctext(x, ty, ML[n], f_num, (150, 40, 20))
 
 
-# Pack tubes by label width, then spread the slack evenly; the divider sits between 9 and 10.
-TUBES, DIVIDER, LEFT, RIGHT = list(range(1, 14)), 70, 60, W - 60
-gaps = [(tube_width(a) + tube_width(b)) / 2 + (DIVIDER if a == 9 else 0) for a, b in zip(TUBES, TUBES[1:])]
-used = sum(gaps) + (tube_width(1) + tube_width(13)) / 2
+# Pack tubes by label width, then spread the slack evenly; dividers after the warms and before the mediums.
+TUBES, DIVIDER, LEFT, RIGHT = list(range(1, 14)) + [15, 16, 17], 70, 60, W - 60
+gaps = [(tube_width(a) + tube_width(b)) / 2 + (DIVIDER if a in (9, 13) else 0) for a, b in zip(TUBES, TUBES[1:])]
+used = sum(gaps) + (tube_width(TUBES[0]) + tube_width(TUBES[-1])) / 2
 extra = (RIGHT - LEFT - used) / len(gaps)
-x = LEFT + tube_width(1) / 2
+x = LEFT + tube_width(TUBES[0]) / 2
 for i, n in enumerate(TUBES):
     blob(x, TUBE_Y, n)
-    if n == 9:
+    if n in (9, 13):
         sep_x = x + (gaps[i] + extra) / 2
         d.line([(sep_x, TUBE_Y - 60), (sep_x, TUBE_Y + 140)], fill=(70, 70, 70), width=4)
     if i < len(gaps):
         x += gaps[i] + extra
 
-WX, DX, BX = 170, 980, 1660
+WX, DX, BX = 170, 920, 1660
 BAND_L, BAND_R = 60, 2340
 FIRST_BAND_TOP = 420
 
-# id: (column x, value used for height, colour, name, line, base recipe or None, note)
+# id: (column x, value used for height, colour, name, line, millilitres,
+#      base recipe from tubes, recipe from another pile, medium (tube, pile parts, medium parts, ml), note lines)
 PILES = {
-    "glow": (WX, 8.6, "E4DDC0", "Сияние", "тон 8,5–8,7 · дно капли", None, "густо"),
-    "gold": (WX, 7.1, "C8AE6E", "Золото", "тон 7 · кольцо на дне", None, "из холста: 6 + 1 кадм. жёлт."),
-    "rim": (WX, 6.0, "AE8C62", "Рыжий край", "тон 6 · правый край", None, None),
-    "flash": (DX, 9.9, "FAFCF8", "Блик", "тон 9,9 · белила, густо", None, None),
-    "canvas": (DX, 6.8, "AAA497", "Холст", "тон 6,8 · тонировка", [(1, 5), (5, 3), (11, 1)], "с водой — втереть"),
-    "umber": (DX, 2.5, "4E3628", "Умбра", "тон 2,5 · рисунок, хвост", [(7, 1)], "медиум 1 : 1 — лессировка"),
-    "core": (DX, 2.0, "34271C", "Ядро тени", "тон 1,7–2 · у касания", None, None),
-    "reflex": (BX, 7.8, "C2C4C4", "Рефлекс", "тон 7,8 · левый край", None, "кроет, без медиума"),
-    "lav": (BX, 6.2, "98959E", "Лаванда", "тон 6,2 · дымка сверху", None, "из холста: 12 + 1 ультрам."),
-    "bluegrey": (BX, 6.1, "929690", "Серо-голубой", "тон 6,1 · шейка", None, "обе: медиум 1 : 2 — вуаль"),
-    "grey": (BX, 4.5, "6A6D66", "Серый край", "тон 4,5 · края шейки", None, None),
-    "dshade": (BX, 2.7, "343932", "Тень капли", "тон 2,5–3 · левый бок", None, None),
-    "dark": (BX, 1.75, "1C1E28", "Тёмный замес", "тон 1,5–2 · без белил", [(7, 1), (11, 1)], "до нейтрального"),
+    "glow": (WX, 8.6, "E4DDC0", "Сияние", "тон 8,5–8,7 · дно", "0,5 мл", None, None, None, ["густо"]),
+    "gold": (WX, 7.1, "C8AE6E", "Золото", "тон 7 · кольцо на дне", "0,6 мл", None, [("canvas", 6), (4, 1)], None, []),
+    "rim": (WX, 6.0, "AE8C62", "Рыжий край", "тон 6 · правый край", "0,3 мл", None, None, None, []),
+    "flash": (DX, 9.9, "FAFCF8", "Блик", "тон 9,9 · рельефом", "0,2 мл", None, [(1, 3), (17, 1)], None, []),
+    "canvas": (DX, 6.8, "AAA497", "Холст", "тон 6,8 · фон", "2,7 мл", [(1, 5), (5, 3), (11, 1)], None,
+               (16, 3, 1, "0,5 мл"), ["накануне: 1,5 мл с сушащим", "утром: ещё 1,2 мл без него"]),
+    "umber": (DX, 2.5, "4E3628", "Умбра", "тон 2,5 · рисунок", "0,4 мл", [(7, 1)], None,
+              (15, 1, 1, "0,4 мл"), []),
+    "core": (DX, 2.0, "34271C", "Ядро тени", "тон 1,7–2 · касание", "0,3 мл", None, None, None, []),
+    "reflex": (BX, 7.8, "C2C4C4", "Рефлекс", "тон 7,8 · левый край", "0,3 мл", None, None, None,
+               ["кроет, без медиума"]),
+    "lav": (BX, 6.2, "98959E", "Лаванда", "тон 6,2 · дымка", "0,45 мл", None, [("canvas", 12), (11, 1)],
+            (15, 1, 2, "0,3 мл"), ["медиум — после отбора"]),
+    "bluegrey": (BX, 6.1, "929690", "Серо-голубой", "тон 6,1 · шейка", "0,1 мл", None, None,
+                 (15, 1, 2, "0,2 мл"), []),
+    "grey": (BX, 4.5, "6A6D66", "Серый край", "тон 4,5 · края шейки", "0,3 мл", None, None, None, []),
+    "dshade": (BX, 2.7, "343932", "Тень капли", "тон 2,5–3 · левый бок", "0,3 мл", None, None, None, []),
+    "dark": (BX, 1.75, "1C1E28", "Тёмный замес", "тон 1,5–2 · без белил", "0,3 мл", [(7, 1), (11, 1)], None,
+             None, ["до нейтрального"]),
 }
 
 # A pile added to another pile is drawn as its own colour with this short name.
-LABEL = {"dark": "тёмный", "umber": "умбра"}
+LABEL = {"dark": "тёмный", "umber": "умбра", "canvas": "холст"}
 
 # Steps of one sitting, rainbow order: step 1 red ... step 7 violet.
 STEP_COLOUR = {1: (232, 48, 48), 2: (246, 138, 22), 3: (250, 214, 34), 4: (64, 178, 76),
@@ -199,11 +212,13 @@ CROSSERS = {max(a, b, key=lambda k: PILES[k][1]) for a, b, _p, _a, lane, _s in L
             if not lane and band_of(PILES[a][1]) != band_of(PILES[b][1])}
 
 
+BASE_ROW, MIX_ROW, NOTE_ROW = 106, 78, 50
+
+
 def below(pid):
-    parts, note = PILES[pid][5], PILES[pid][6]
-    if parts:
-        return 172 if note else 115
-    return 66 if note else 14
+    base, recipe, medium, notes = PILES[pid][6:10]
+    rows = (BASE_ROW if base else 0) + MIX_ROW * (bool(recipe) + bool(medium)) + NOTE_ROW * len(notes)
+    return 14 + rows
 
 
 def layout(pad):
@@ -262,7 +277,7 @@ def pos(pid):
 
 
 def pile_radius(pid):
-    return 60 if PILES[pid][5] else 48
+    return 60 if PILES[pid][6] else 48
 
 
 def halo_line(points, width=4):
@@ -278,7 +293,7 @@ def halo_head(x, y, up):
 
 def added_look(p):
     if isinstance(p, str):
-        return LABEL[p], "circle", hexrgb(PILES[p][2])
+        return LABEL.get(p, PILES[p][3]), "circle", hexrgb(PILES[p][2])
     return PAINT[p][0], TEMPERATURE[p], PAINT[p][1]
 
 
@@ -338,28 +353,58 @@ def step_tag(x, y, steps):
         x += d.textlength(text, font=f_name)
 
 
+def mix_row(x, y, items, fg, edge, tail=None):
+    # items: (tube number, pile id or None for this pile, parts, show name)
+    for i, (key, parts, named) in enumerate(items):
+        if i:
+            d.text((x + 24, y), "+", font=f_name, fill=fg, anchor="mm")
+            x += 48
+        name, kind, colour = added_look(key)
+        mark(x + LINK_R, y, LINK_R, kind, colour, parts, edge)
+        x += 2 * LINK_R
+        if named:
+            d.text((x + 12, y), name, font=f_small, fill=fg, anchor="lm")
+            x += 12 + d.textlength(name, font=f_small)
+    if tail:
+        d.text((x + 16, y), tail, font=f_name, fill=ml_colour(fg), anchor="lm")
+
+
+def ml_colour(fg):
+    return (255, 150, 118) if ink(fg) == (20, 20, 20) else (150, 40, 20)
+
+
 def pile(pid):
-    x, v, hexcol, name, line, parts, note = PILES[pid]
+    x, v, hexcol, name, line, ml, base, recipe, medium, notes = PILES[pid]
     y = Y[pid]
     fg, sub = BANDS[band_of(v)][3], BANDS[band_of(v)][4]
     r = pile_radius(pid)
-    if parts:
+    if base:
         d.ellipse((x - r - 14, y - r - 14, x + r + 14, y + r + 14), outline=BASE_RING, width=10)
     edge = (35, 35, 35) if ink(fg) == (245, 245, 245) else (215, 215, 215)
     d.ellipse((x - r, y - r, x + r, y + r), fill=hexrgb(hexcol), outline=edge, width=3)
     tx = x + 96
     d.text((tx, y - NAME_UP), name, font=f_name, fill=fg)
     step_tag(tx + d.textlength(name, font=f_name) + 28, y - NAME_UP, STEPS[pid])
+    line += " · "
     d.text((tx, y - 28), line, font=f_line, fill=sub)
-    ny = y + 26
-    if parts:
+    d.text((tx + d.textlength(line, font=f_line), y - 28), ml, font=f_name, fill=ml_colour(fg))
+    cy = y + 26
+    if base:
         rx = tx
-        for key, amount in parts:
-            mark(rx + 45, y + 70, 45, TEMPERATURE[key], PAINT[key][1], amount, edge)
+        for key, amount in base:
+            mark(rx + 45, cy + 44, 45, TEMPERATURE[key], PAINT[key][1], amount, edge)
             rx += 108
-        ny = y + 132
-    if note:
-        d.text((tx, ny), note, font=f_small, fill=sub)
+        cy += BASE_ROW
+    if recipe:
+        mix_row(tx, cy + 36, [(k, p, True) for k, p in recipe], fg, edge)
+        cy += MIX_ROW
+    if medium:
+        tube, p_parts, m_parts, m_ml = medium
+        mix_row(tx, cy + 36, [(pid, p_parts, False), (tube, m_parts, True)], fg, edge, "+ " + m_ml)
+        cy += MIX_ROW
+    for note in notes:
+        d.text((tx, cy + 4), note, font=f_small, fill=sub)
+        cy += NOTE_ROW
 
 
 for args in LINKS:
@@ -371,6 +416,6 @@ for i, s in enumerate(["Тёмные капли — лессировка:", "б�
                        "Больше медиума — светлее,", "сквозь неё виден холст."]):
     d.text((DX - 30, BANDS[1][0] + 85 + i * 48), s, font=f_small, fill=BANDS[1][4])
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-2.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-3.jpg")
 img.save(out, quality=93)
 print(out, "pad", pad)
