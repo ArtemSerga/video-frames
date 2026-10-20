@@ -1,6 +1,6 @@
 ---
 name: painting-lesson-import
-description: Break a painting video lesson down into a Notion card — transcript, timeline, frames per stage, techniques, prohibitions. Use whenever a Realist Academy lesson, Portrait of Lisa, Portrait of Alex, a YouTube painting or drawing demo, or an uploaded .srt/.vtt file comes up, and for requests like "break down this lesson", "summarise this video", "fill in the lesson card", "process this video", "grab screenshots at these timecodes", "разбери урок", "сделай конспект видео", "заполни карточку урока". Trigger even when Notion is not named explicitly.
+description: Break a painting video lesson down into a Notion card — transcript, timeline, frames per stage, techniques, prohibitions. Use whenever a Realist Academy lesson, Portrait of Lisa, Portrait of Alex, a YouTube painting or drawing demo, or an uploaded .srt/.vtt file comes up, and for requests like "break down this lesson", "summarise this video", "fill in the lesson card", "process this video", "grab screenshots at these timecodes", "разбери урок", "сделай конспект видео", "заполни карточку урока". Also use it when the user sends a photo of their finished painting for a work ("вот что вышло", "мой результат"). Trigger even when Notion is not named explicitly.
 ---
 
 # Painting lesson to Notion card
@@ -390,7 +390,26 @@ yt-dlp --flat-playlist --print "%(playlist_index)s %(id)s %(duration)s %(title)s
 
 ### The `Оригинал` property of a work
 
-For a card in «🪧 Работы», put the clean final frame (`reference.jpg`, pushed to the repository) into `Оригинал`. Upload it with `notion-create-attachment`, `source_url` set to its `raw.githubusercontent.com` address and a `filename` such as `cake-final.jpg`, then pass the returned id with `update_properties`: `{"Оригинал": [{"type": "file_upload", "file_upload": {"id": "…"}}]}`. An unattached upload expires within the hour, so set the property straight away. If `Оригинал` already holds a file, it is the user's own: leave it and ask before replacing it.
+Whenever you fill a card in «🪧 Работы», fill `Оригинал` as part of the job, without being asked. It holds the clean final frame (`reference.jpg`, pushed to the repository). Upload it with `notion-create-attachment`, `source_url` set to its `raw.githubusercontent.com` address and a `filename` such as `cake-final.jpg`, then pass the returned id with `update_properties`: `{"Оригинал": [{"type": "file_upload", "file_upload": {"id": "…"}}]}`. An unattached upload expires within the hour, so set the property straight away. If `Оригинал` already holds a file, it is the user's own: leave it as it is.
+
+### A photo of the result
+
+When the user sends a photo of their finished painting for a work, do all of this without asking:
+
+1. **`Результат` gets the photo.** It is a local file and the user's own work, so never push it to the public repository. Call `notion-create-file-upload` with a `filename` such as `lemon-result.jpg`. Send one multipart POST of the file to the returned `upload_url`, with every header from `upload_headers` and the file in the `file` field. Then set `{"Результат": [{"type": "file_upload", "file_upload": {"id": "…"}}]}`. If `Результат` already holds a photo, ask before replacing it.
+2. **`Дата`** is today's date, `date:Дата:start` in ISO form.
+3. **`Статус`** is `Готово`.
+4. **`Что вышло` and `Что в следующий раз`** come from the user's comments plus your own reading of the photo, paraphrased in Russian. Measure values on the photo, Munsell 0–10, before writing anything about them. Say they are photo values: exposure shifts them all, so compare them with each other and with the plan, not as absolutes.
+5. **A result table goes in the body.** Append it at the very end of the page, under the heading `# Разбор результата`. Each row is a place on the canvas, using the zone names of the stage table (the object in light, its own shadow, the cast shadow, the background, the contour, details). The columns are `Место`, `Хорошо`, `Плохо`, `Как улучшить`. A cell may be `—` when there is nothing to say. `Как улучшить` names a concrete action: a pile, a brush or a target value, never "be more careful". Use `header-row="true"` and `header-column="true"`.
+
+Then fetch the page and check the tail and the properties.
+
+```
+<table fit-page-width="true" header-row="true" header-column="true">
+<tr><td>Место</td><td>Хорошо</td><td>Плохо</td><td>Как улучшить</td></tr>
+<tr><td>Своя тень лимона</td><td>…</td><td>…</td><td>…</td></tr>
+</table>
+```
 
 ### Images by external link
 
