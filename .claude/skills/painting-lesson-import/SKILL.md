@@ -190,6 +190,12 @@ Fetch the series page afterwards and confirm the image is the first content bloc
 
 When a work card needs "where the mixes go", draw the user's own palette, not the author's.
 
+**Start from the canvas size.** Read the card's `Формат` before planning anything. If it is empty, plan for A6 (105×148 mm, the user's default study size since 20.10.2026), set `Формат` to A6 and say so in the reply. Convert every zone measured on the frame into millimetres for that format (`шейка 15–18 мм, блик 6×9 мм`) and check each brush against its zone: a brush wider than its zone does not go there. Name the support when the lesson depends on it: a subject that shows the canvas weave needs canvas, not MDF or paper.
+
+**Plan for the user's technique: thick lights, thin darks, texture follows the material.** Lights and highlights go on thick, with impasto where the material is rough or catches light. Shadows, glazes and anything the ground should show through stay thin. Where a lesson's author paints smooth, keep it smooth only if the material is smooth (water, glass, polished metal), and let the texture come from the support or from thick lights.
+
+**State how much of each tube to squeeze, in millilitres, for that format.** Estimate each pile as area × film thickness, plus palette loss: about 0.01 ml/cm² for a toning or a rubbed-in layer, 0.02 for a thin scumble, 0.04–0.05 for body paint, 0.08–0.1 for impasto. Do not go below about 0.3 ml for a pile that has to be mixed, and add the parent piles that feed derived ones. Sum the recipes per tube and round. Write a trace as `след` («на кончик мастихина»). The volumes appear twice: under each squeezed tube in the scheme header (the `ML` dict in `painting/works/drop-3d/palette-mixes.py`) and as a `### Выдавить` list on the card, with the 37 ml tube conversion: 1 cm of paint ≈ 0.3 ml.
+
 **Reference scheme: `painting/works/butterfly-by-numbers/palette-mixes.py` → `palette-tree-10.jpg`.** The user called it the model to follow. Copy the script into the work folder and change only `PILES`, `LINKS` and the band titles. Run with `uv run --no-project --with pillow python palette-mixes.py`. `painting/works/transparent-wave/palette-mixes.py` is the older style; do not copy it.
 
 Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion caches external images by URL, so overwriting a published name shows the old picture.
@@ -217,6 +223,8 @@ Every regeneration gets a new file name (`palette-tree-2.jpg`, …). Notion cach
 **A brush map sits next to the scheme: the reference with brush markers over it.** The scheme answers what to mix, the step tags when; the map answers which brush goes where. The shapes are the user's: circle for a round, oval for a filbert, square for a flat, triangle for a liner, star for a blending pass. The knife was not on the user's list and is drawn as a rhombus. The colour is the step, using the same rainbow as the step tags. The number inside is the brush size. Markers are hollow outlines over a dark half-transparent fill, so they cannot be confused with the filled warm circles and cold squares of the scheme, and the painting still shows through. Put one marker per typical zone, not one per area. A strip under the picture maps shape + number to the model (`4 Akoya Filbert` beside an oval); it also pads the image to A4, so the map stands as tall as the scheme beside it. The map must agree with the `Кисть` column of the stage table.
 
 **Each brush carries one colour family for the whole sitting and is never washed during it.** The user picks brushes so that they do not have to wash them between colours. Give every family its own brushes (dark background, warm, blue, body and lines). Light piles get their own brushes inside a family, so dark residue cannot dirty them. Each blending seam gets its own dry brush: warm into dark, blue into dark. Inside a family the brush is only wiped on a rag between piles. The knife is shared, because one wipe cleans it. On the map the marker's fill is the family colour, a lighter tint for lights-only brushes, and a blending star is split between the two families it joins. The outline stays the step. The strip under the picture is grouped into one column per family, listing each brush once. Draw from the whole Notion brush list, not only the segment `Основная`: a split by family needs more brushes than one set holds, and the `Хобби` filberts and the dry pony earn a slot here. Reference: `painting/works/butterfly-by-numbers/brush-map.py`, output `brush-map-2.jpg`.
+
+**Order the steps by brush family, so each set of brushes is used once and put aside.** A family's brushes work through their step, then leave the table: on the drop that is umber (step 2), then warm (3), then cool (4). Only the dry blending brushes come back later, and only across the seam they are assigned to. A family is a temperature group, not a tube: the colour that would dirty its neighbour gets its own brushes. When two families meet on the canvas, name the one dry brush allowed to cross that seam. The card's `### Кисти` says this in a few lines: the families with their brushes, the order, and the crossing brush.
 
 **Texture over blending; hint at contours.** The user painted the lemon plan with its full valeur step: dry mop, pony and fan over the whole form. In their own words, the more they softened the transitions, the flatter the work got. The textured strokes carried the volume. Plan a blending pass only along the seams that need it, and leave the strokes inside a mass alone. Never schedule a pass that wipes the strokes off a whole mass or the background. Ask for stroke direction and size to vary on purpose: even a small symmetry stands out, and so does an even halo that follows an outline like a ring. Never plan a continuous outline. The edge should be firm in places and lost in others. A cast shadow should touch the object in places and let the background in between. Pre-mixing every pile by the scheme is confirmed: the user mixed all of them first, then painted freely. Reference: the lemon card's `Что вышло`, 20.10.2026.
 
@@ -249,17 +257,30 @@ Inside the A4 frame: bands from x 60 to 2340 with 15 px gaps, their heights deri
 
 Labels are Russian (Arial from `/System/Library/Fonts/Supplemental/` — Helvetica has no Cyrillic); code and comments are English. Read the JPEG from disk and fix overlapping labels before committing.
 
-**In Notion** the scheme goes under `### Замесы`, as a two-column block: the 12-part colour wheel on the left, the palette scheme on the right. The wheel is one synced block, whose original sits on the Notion card «🎨 Организация палитры» and shows `painting/color-wheel-12-paints.jpg` (generated by `painting/color-wheel-12-paints.py`). A work holds a `synced_block_reference` to it, never its own image, so one edit of the original updates every work. The children inside the reference must stay identical to the original's.
+**In Notion** the images go right after the card's opening lines (title, step chain, format and sizes), before `### Выдавить` and the stage table. Two rows, each one two-column block at 50/50:
+
+1. **Left: the brush map** (the reference with brush markers). **Right: the palette scheme.**
+2. **Left: the clean original** (`reference.jpg`, no markup). **Right: the Itten colour wheel.**
+
+The wheel is one synced block, whose original sits on the Notion card «🎨 Организация палитры» and shows `painting/color-wheel-12-paints.jpg` (generated by `painting/color-wheel-12-paints.py`). A work holds a `synced_block_reference` to it, never its own image, so one edit of the original updates every work. The children inside the reference must stay identical to the original's. The brush map no longer sits beside the stage table; the table runs full width. Reference card: «3D капля», `https://app.notion.com/p/3ffe02c6222280d68138ce6c60803f6f`.
 
 ```
 <columns>
-	<column ratio="40">
+	<column ratio="50">
+		![Карта кистей: форма — кисть, контур — шаг, заливка — семейство, число — номер](https://raw.githubusercontent.com/USER/video-frames/main/painting/works/WORK/brush-map-1.jpg)
+	</column>
+	<column ratio="50">
+		![Моя палитра: базы, что из них выводится и сколько выдавить](https://raw.githubusercontent.com/USER/video-frames/main/painting/works/WORK/palette-tree-1.jpg)
+	</column>
+</columns>
+<columns>
+	<column ratio="50">
+		![Оригинал](https://raw.githubusercontent.com/USER/video-frames/main/painting/works/WORK/reference.jpg)
+	</column>
+	<column ratio="50">
 		<synced_block_reference url="https://app.notion.com/p/0e4e02c622228330a5f901e1513f3a7a#3c82bc40448d4470be9893615f9a164f">
 			![Цветовой круг: чем замешать каждую ячейку из моих тюбиков](https://raw.githubusercontent.com/USER/video-frames/main/painting/color-wheel-12-paints.jpg)
 		</synced_block_reference>
-	</column>
-	<column ratio="60">
-		![Палитра: базы и что из них выводится](https://raw.githubusercontent.com/USER/video-frames/main/painting/works/WORK/palette-tree.jpg)
 	</column>
 </columns>
 ```
