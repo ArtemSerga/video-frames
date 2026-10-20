@@ -39,10 +39,10 @@ PAINT = {
 }
 
 # Tubes this palette does not squeeze; drawn hollow.
-HOLLOW = {2, 6, 8, 10, 12, 13}
+HOLLOW = {6, 8, 10, 12, 13}
 
 # Millilitres for an A6 canvas, the day before and the sitting together.
-ML = {1: "2,1 мл", 3: "след", 4: "0,1 мл", 5: "0,9 мл", 7: "0,6 мл", 9: "след", 11: "0,5 мл",
+ML = {1: "1,9 мл", 2: "0,4 мл", 3: "след", 4: "0,1 мл", 5: "0,7 мл", 7: "0,6 мл", 9: "след", 11: "0,5 мл",
       15: "1,5 мл", 16: "0,5 мл", 17: "след"}
 BASE_RING = (226, 170, 40)
 
@@ -93,11 +93,12 @@ def mark(x, y, r, kind, color, amount, outline):
     d.text((x, y), parts_label(amount), font=f_part, fill=ink(color), anchor="mm")
 
 
-d.text((40, 28), "Капля: три базы, что из них выводится и сколько · A6", font=f_title, fill=(28, 28, 28))
+d.text((40, 28), "Капля: четыре базы, что из них выводится и сколько · A6", font=f_title, fill=(28, 28, 28))
 
 d.rounded_rectangle((28, 110, W - 28, H - 24), radius=30, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
 
 R = 48
+R_HOLLOW = 30
 TUBE_Y = 188
 
 
@@ -108,7 +109,7 @@ def tube_lines(n):
 
 def tube_width(n):
     if n in HOLLOW:
-        return 2 * R
+        return 2 * R_HOLLOW
     return max(2 * R, max(d.textlength(s, font=f_edge) for s in tube_lines(n)))
 
 
@@ -116,8 +117,8 @@ def blob(x, y, n):
     name, color = PAINT[n]
     kind = TEMPERATURE[n]
     if n in HOLLOW:
-        shape(kind, x, y, R, None, outline=(40, 40, 40))
-        d.text((x, y), str(n), font=f_num, fill=(30, 30, 30), anchor="mm")
+        shape(kind, x, y, R_HOLLOW, None, outline=(40, 40, 40))
+        d.text((x, y), str(n), font=f_part, fill=(30, 30, 30), anchor="mm")
         return
     else:
         shape(kind, x, y, R, color)
@@ -155,14 +156,14 @@ PILES = {
     "gold": (WX, 7.1, "C8AE6E", "Золото", "тон 7 · кольцо на дне", "0,6 мл", None, [("canvas", 6), (4, 1)], None, []),
     "rim": (WX, 6.0, "AE8C62", "Рыжий край", "тон 6 · правый край", "0,3 мл", None, None, None, []),
     "flash": (DX, 9.9, "FAFCF8", "Блик", "тон 9,9 · рельефом", "0,2 мл", None, [(1, 3), (17, 1)], None, []),
-    "canvas": (DX, 6.8, "AAA497", "Холст", "тон 6,8 · фон", "2,7 мл", [(1, 5), (5, 3), (11, 1)], None,
-               (16, 3, 1, "0,5 мл"), ["накануне: 1,5 мл с сушащим", "утром: ещё 1,2 мл без него"]),
+    "canvas": (DX, 6.8, "AAA497", "Холст", "тон 6,8 · фон", "2,1 мл", [(1, 5), (5, 3), (11, 1)], None,
+               (16, 3, 1, "0,5 мл"), ["накануне: 1,5 мл с сушащим", "утром: ещё 0,6 мл без него"]),
     "umber": (DX, 2.5, "4E3628", "Умбра", "тон 2,5 · рисунок", "0,4 мл", [(7, 1)], None,
               (15, 1, 1, "0,4 мл"), []),
     "core": (DX, 2.0, "34271C", "Ядро тени", "тон 1,7–2 · касание", "0,3 мл", None, None, None, []),
     "reflex": (BX, 7.8, "C2C4C4", "Рефлекс", "тон 7,8 · левый край", "0,3 мл", None, None, None,
                ["кроет, без медиума"]),
-    "lav": (BX, 6.2, "98959E", "Лаванда", "тон 6,2 · дымка", "0,45 мл", None, [("canvas", 12), (11, 1)],
+    "lav": (BX, 6.2, "98959E", "Лаванда", "тон 6,2 · дымка", "0,45 мл", [(2, 18), (7, 2), (11, 1)], None,
             (15, 1, 2, "0,3 мл"), ["медиум — после отбора"]),
     "bluegrey": (BX, 6.1, "929690", "Серо-голубой", "тон 6,1 · шейка", "0,1 мл", None, None,
                  (15, 1, 2, "0,2 мл"), []),
@@ -418,6 +419,6 @@ for i, s in enumerate(["Тёмные капли — лессировка:", "б�
                        "Больше медиума — светлее,", "сквозь неё виден холст."]):
     d.text((DX - 30, BANDS[1][0] + 85 + i * 48), s, font=f_small, fill=BANDS[1][4])
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-4.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-5.jpg")
 img.save(out, quality=93)
 print(out, "pad", pad)
