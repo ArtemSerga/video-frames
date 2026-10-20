@@ -363,7 +363,7 @@ That is what the card exists for.
 
 **A mix named inside a stage block always carries its recipe in brackets** — `Замес: №2 (Burnt Umber 3 : Cadmium Red Hue 1)`, or better, the base plus the branch: `телесный + умбра до 5`. The number alone sends the reader back up to the table, which is exactly what cannot happen with a brush in hand.
 
-**Medium:** always its own line or column, even when the answer is "none" everywhere. Thirteen "none" in a row is a rule, not an empty column.
+**Medium: inside the recipe, never a separate column.** A mix that takes a medium names it with its parts, like any paint: `Умбра (Burnt Umber 1 : Painting Medium 1)`, `Блик (Titanium White 3 : Impasto Medium 1)`. A mix without one goes on thick from the tube; the stage text says so where it matters. The palette scheme shows the same thing as medium marks. The user asked for this on 20.10.2026; before that, medium was its own column.
 
 ---
 
