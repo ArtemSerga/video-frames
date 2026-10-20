@@ -321,7 +321,7 @@ def link(parent, child, p_parts, added, lane, side):
         halo_line([(px, y0), (px, y1)])
         halo_head(px, y1, up)
         upper, lower = (child, parent) if up else (parent, child)
-        lab_x, lab_y = px + 22, (Y[upper] + below(upper) + Y[lower] - NAME_UP) / 2
+        lab_x, lab_y = px + 66, (Y[upper] + below(upper) + Y[lower] - NAME_UP) / 2
         if upper in CROSSERS:
             lab_y = (Y[upper] + below(upper) + BANDS[band_of(PILES[upper][1])][1]) / 2
     fg = text_on(lab_y)
@@ -366,11 +366,11 @@ def mix_row(x, y, items, fg, edge, tail=None):
             d.text((x + 12, y), name, font=f_small, fill=fg, anchor="lm")
             x += 12 + d.textlength(name, font=f_small)
     if tail:
-        d.text((x + 16, y), tail, font=f_name, fill=ml_colour(fg), anchor="lm")
+        d.text((x + 16, y), tail, font=f_num, fill=ml_colour(fg), anchor="lm")
 
 
 def ml_colour(fg):
-    return (255, 150, 118) if ink(fg) == (20, 20, 20) else (150, 40, 20)
+    return (255, 120, 96) if ink(fg) == (20, 20, 20) else (190, 30, 20)
 
 
 def pile(pid):
@@ -385,9 +385,11 @@ def pile(pid):
     tx = x + 96
     d.text((tx, y - NAME_UP), name, font=f_name, fill=fg)
     step_tag(tx + d.textlength(name, font=f_name) + 28, y - NAME_UP, STEPS[pid])
-    line += " · "
     d.text((tx, y - 28), line, font=f_line, fill=sub)
-    d.text((tx + d.textlength(line, font=f_line), y - 28), ml, font=f_name, fill=ml_colour(fg))
+    my = y + r + (26 if base else 10)
+    mw = d.textlength(ml, font=f_num)
+    d.rounded_rectangle((x - mw / 2 - 8, my - 2, x + mw / 2 + 8, my + 36), radius=10, fill=BANDS[band_of(v)][2])
+    ctext(x, my, ml, f_num, ml_colour(fg))
     cy = y + 26
     if base:
         rx = tx
@@ -416,6 +418,6 @@ for i, s in enumerate(["Тёмные капли — лессировка:", "б�
                        "Больше медиума — светлее,", "сквозь неё виден холст."]):
     d.text((DX - 30, BANDS[1][0] + 85 + i * 48), s, font=f_small, fill=BANDS[1][4])
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-3.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-4.jpg")
 img.save(out, quality=93)
 print(out, "pad", pad)
