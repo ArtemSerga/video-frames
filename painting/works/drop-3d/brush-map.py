@@ -37,7 +37,7 @@ FAMILY = {
 
 # shape, size label, brush, fill (one family, or two for a blending brush)
 BRUSH = {
-    "gn12": ("square", "12", "Golden Night Flat", ("canvas",)),
+    "art12": ("square", "12", "Artisan Short Flat", ("canvas",)),
     "pony10": ("star", "10", "пони, сухой", ("cool", "canvas")),
     "cad2": ("circle", "2", "Cadence CA123", ("umber",)),
     "nova8": ("square", "8", "Nova Bright", ("umber",)),
@@ -54,7 +54,7 @@ BRUSH = {
 }
 
 KEY = [
-    ("Холст", "canvas", ["gn12", "pony10"]),
+    ("Холст", "canvas", ["art12", "pony10"]),
     ("Умбра", "umber", ["cad2", "nova8", "liner2"]),
     ("Тёплое дно", "warm", ["filb4", "cad1", "dv6", "dv4"]),
     ("Холодная капля", "cool", ["aspen8", "filb10", "bright4", "round6", "mop10"]),
@@ -63,9 +63,9 @@ KEY = [
 # step, brush, (x, y) in reference pixels
 MARKS = [
     # 1 tone the whole canvas with the canvas pile
-    (1, "gn12", (80, 150)),
-    (1, "gn12", (530, 430)),
-    (1, "gn12", (100, 720)),
+    (1, "art12", (80, 150)),
+    (1, "art12", (530, 430)),
+    (1, "art12", (100, 720)),
     # 2 umber drawing, then the cast shadow
     (2, "cad2", (222, 705)),
     (2, "nova8", (430, 805)),
@@ -172,6 +172,6 @@ for col, (title, fam, ids) in enumerate(KEY):
         d = ImageDraw.Draw(img)
         d.text((cx + 54, cy), name, font=f_keyl, fill=(236, 230, 218), anchor="lm")
 
-out = os.path.join(HERE, "brush-map-1.jpg")
+out = os.path.join(HERE, "brush-map-2.jpg")
 img.save(out, quality=90)
 print(out, img.size)
