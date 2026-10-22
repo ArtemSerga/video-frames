@@ -42,10 +42,10 @@ PAINT = {
 MEDIUM_CODE = {15: "P", 16: "F", 17: "I"}
 
 # Tubes this palette does not squeeze; drawn hollow.
-HOLLOW = {6, 8, 10, 12, 13}
+HOLLOW = {4, 6, 8, 10, 12, 13}
 
 # Millilitres for an A6 canvas, the day before and the sitting together.
-ML = {1: "1,9 мл", 2: "0,4 мл", 3: "след", 4: "0,1 мл", 5: "0,7 мл", 7: "0,6 мл", 9: "след", 11: "0,5 мл",
+ML = {1: "1,9 мл", 2: "0,4 мл", 3: "след", 5: "0,8 мл", 7: "0,7 мл", 9: "след", 11: "0,5 мл",
       15: "1,5 мл", 16: "0,5 мл", 17: "след"}
 BASE_RING = (226, 170, 40)
 
@@ -101,7 +101,7 @@ def mark(x, y, r, kind, color, amount, outline):
     d.text((x, y), amount if isinstance(amount, str) else parts_label(amount), font=f_part, fill=ink(color), anchor="mm")
 
 
-d.text((40, 28), "Капля: четыре базы, что из них выводится и сколько · A6", font=f_title, fill=(28, 28, 28))
+d.text((40, 28), "Капля: пять баз, что из них выводится и сколько · A6", font=f_title, fill=(28, 28, 28))
 
 d.rounded_rectangle((28, 110, W - 28, H - 24), radius=30, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
 
@@ -161,11 +161,12 @@ FIRST_BAND_TOP = 420
 #      base recipe from tubes, recipe from another pile, medium (tube, pile parts, medium parts, ml), note lines)
 PILES = {
     "glow": (WX, 8.6, "E4DDC0", "Сияние", "тон 8,5–8,7 · дно", "0,5 мл", None, None, None, ["густо"]),
-    "gold": (WX, 7.1, "C8AE6E", "Золото", "тон 7 · кольцо на дне", "0,6 мл", None, [("canvas", 6), (4, 1)], None, []),
+    "gold": (WX, 7.1, "C8AE6E", "Золото", "тон 7 · кольцо на дне", "0,6 мл", [(1, 6), (5, 6), (7, 1)], None, None,
+             ["без ультрамарина"]),
     "rim": (WX, 6.0, "AE8C62", "Рыжий край", "тон 6 · правый край", "0,3 мл", None, None, None, []),
     "flash": (DX, 9.9, "FAFCF8", "Блик", "тон 9,9 · рельефом", "0,2 мл", None, [(1, 3), (17, 1)], None, []),
-    "canvas": (DX, 6.8, "AAA497", "Холст", "тон 6,8 · фон", "2,1 мл", [(1, 5), (5, 3), (11, 1)], None,
-               (16, 3, 1, "0,5 мл"), ["накануне: 1,5 мл с F", "утром: ещё 0,6 мл без F"]),
+    "canvas": (DX, 6.8, "AAA497", "Холст", "тон 6,8 · фон", "1,5 мл", [(1, 5), (5, 3), (11, 1)], None,
+               (16, 3, 1, "0,5 мл"), ["только накануне"]),
     "umber": (DX, 2.5, "4E3628", "Умбра", "тон 2,5 · рисунок", "0,4 мл", [(7, 1)], None,
               (15, 1, 1, "0,4 мл"), []),
     "core": (DX, 2.0, "34271C", "Ядро тени", "тон 1,7–2 · касание", "0,3 мл", None, None, None, []),
@@ -182,7 +183,7 @@ PILES = {
 }
 
 # A pile added to another pile is drawn as its own colour with this short name.
-LABEL = {"dark": "тёмный", "umber": "умбра", "canvas": "холст"}
+LABEL = {"dark": "тёмный", "umber": "умбра"}
 
 # Steps of one sitting, rainbow order: step 1 red ... step 7 violet.
 STEP_COLOUR = {1: (232, 48, 48), 2: (246, 138, 22), 3: (250, 214, 34), 4: (64, 178, 76),
@@ -194,7 +195,7 @@ STEPS = {"canvas": (1,), "umber": (2, 7), "core": (2,), "dark": (2, 4), "gold": 
 # parent, child, parent parts, [(added paint or pile, parts)], lane offset, lane label side
 LINKS = [
     ("gold", "glow", 1, [(1, 2)], 0, None),
-    ("gold", "rim", 3, [(9, 0.3), ("umber", 0.3)], 0, None),
+    ("gold", "rim", 3, [(7, 0.5), (9, 0.1)], 0, None),
     ("umber", "core", 2, [("dark", 1)], 0, None),
     ("lav", "reflex", 1, [(1, 1)], 0, None),
     ("lav", "bluegrey", 20, [(3, 1)], 0, None),
@@ -427,6 +428,6 @@ for i, s in enumerate(["Тёмные капли — лессировка:", "б�
                        "Больше медиума — светлее,", "сквозь неё виден холст."]):
     d.text((DX - 30, BANDS[1][0] + 85 + i * 48), s, font=f_small, fill=BANDS[1][4])
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-6.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-7.jpg")
 img.save(out, quality=93)
 print(out, "pad", pad)
