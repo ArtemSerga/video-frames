@@ -42,10 +42,12 @@ PAINT = {
 MEDIUM_CODE = {15: "P", 16: "F", 17: "I"}
 
 # Grey only. Ochre stays shut: with ultramarine and white it goes olive.
-HOLLOW = {3, 4, 5, 6, 8, 9, 10, 12, 13, 15, 16, 17}
+# Fast Drying is the evening tone only.
+HOLLOW = {3, 4, 5, 6, 8, 9, 10, 12, 13, 15, 17}
 
-# Millilitres for A6, one sitting. 1 cm from a 37 ml tube is about 0.3 ml.
-ML = {1: "0,4 мл", 2: "4,3 мл", 7: "1,7 мл", 11: "2,0 мл"}
+# Millilitres for A4, tone the evening before and paint the next day.
+# 1 cm from a 37 ml tube is about 0.3 ml.
+ML = {1: "1,6 мл", 2: "22 мл", 7: "7,2 мл", 11: "8,5 мл", 16: "1,7 мл"}
 BASE_RING = (226, 170, 40)
 
 # Same code as the colour wheel: circle warm, square cold, hexagon cool or neutral.
@@ -100,7 +102,7 @@ def mark(x, y, r, kind, color, amount, outline):
     d.text((x, y), amount if isinstance(amount, str) else parts_label(amount), font=f_part, fill=ink(color), anchor="mm")
 
 
-d.text((40, 28), "Голова Азаро: базы, что из них выводится и сколько · A6", font=f_title, fill=(28, 28, 28))
+d.text((40, 28), "Голова Азаро: базы, что из них выводится и сколько · A4", font=f_title, fill=(28, 28, 28))
 
 d.rounded_rectangle((28, 110, W - 28, H - 24), radius=30, fill=(158, 160, 158), outline=(90, 90, 90), width=3)
 
@@ -152,7 +154,7 @@ for i, n in enumerate(TUBES):
     if i < len(gaps):
         x += gaps[i] + extra
 
-WX, DX, BX = 1200, 1200, 1200
+WX, DX, BX = 780, 1560, 1560
 BAND_L, BAND_R = 60, 2340
 FIRST_BAND_TOP = 420
 
@@ -165,12 +167,14 @@ FIRST_BAND_TOP = 420
 # Placement values follow a tinting-strength model (dark stronger than zinc).
 # Swatches are sampled off the reference. Ratios are a first try: tune by eye.
 PILES = {
-    "light": (DX, 9.0, "E4E2DC", "Свет", "тон 9 · лоб и макушка", "0,8 мл", None, None, None,
+    "light": (DX, 9.0, "E4E2DC", "Свет", "тон 9 · лоб и макушка", "3,2 мл", None, None, None,
               ["не дотягивает — капля титановых"]),
-    "mass": (DX, 8.0, "C8C6C0", "Масса", "тон 8 · щека, шея, постамент", "1,8 мл", None, None, None, []),
-    "turn": (DX, 6.5, "9A968F", "Поворот", "тон 6,5 · бок носа, под бровью", "0,5 мл", None, None, None, []),
-    "pit": (DX, 5.0, "6E6A64", "Яма", "тон 5 · ноздря, ухо, под челюстью", "0,4 мл", None, None, None, []),
-    "dark": (DX, 1.7, "1C1A17", "Тёмное", "тон 1,7 · фон", "2,4 мл",
+    "mass": (DX, 8.0, "C8C6C0", "Масса", "тон 8 · щека, шея, постамент", "7,2 мл", None, None, None, []),
+    "turn": (DX, 6.5, "9A968F", "Поворот", "тон 6,5 · бок носа, под бровью", "2 мл", None, None, None, []),
+    "ground": (WX, 6.5, "A8A49C", "Тон", "тон 6,5 · весь лист, накануне", "5 мл",
+               [(7, 1), (11, 1), (2, 6)], None, (16, 3, 1, "1,7 мл"), ["не рисунок головы"]),
+    "pit": (DX, 5.0, "6E6A64", "Яма", "тон 5 · ноздря, ухо, под челюстью", "1,6 мл", None, None, None, []),
+    "dark": (DX, 1.7, "1C1A17", "Тёмное", "тон 1,7 · фон вокруг", "9,6 мл",
              [(7, 1), (11, 1)], None, None, ["если тёплый — ещё ультрамарин"]),
 }
 
@@ -180,7 +184,7 @@ LABEL = {}
 # Step 1 is the umber drawing; it has no pile, only a brush.
 STEP_COLOUR = {1: (232, 48, 48), 2: (246, 138, 22), 3: (250, 214, 34), 4: (64, 178, 76),
                   5: (64, 170, 232), 6: (46, 86, 222), 7: (152, 72, 204)}
-STEPS = {"dark": (1,), "pit": (2,), "turn": (3,), "mass": (4,), "light": (5,)}
+STEPS = {"ground": (1,), "dark": (2,), "pit": (3,), "turn": (4,), "mass": (5,), "light": (6,)}
 
 # parent, child, parent parts, [(added paint or pile, parts)], lane offset, lane label side
 LINKS = [
@@ -411,6 +415,6 @@ for args in LINKS:
 for pid in PILES:
     pile(pid)
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-1.jpg")
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "palette-tree-2.jpg")
 img.save(out, quality=93)
 print(out, "pad", pad)

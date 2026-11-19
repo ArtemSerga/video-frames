@@ -34,36 +34,36 @@ FAMILY = {
 
 # shape, size label, brush, fill (one family for the whole sitting)
 BRUSH = {
-    "nova8": ("square", "8", "Nova Bright 8", ("dark",)),
+    "golden": ("square", "12", "Golden Night 12", ("dark",)),
     "ak4": ("square", "4", "Akoya Bright 4", ("dark",)),
-    "nova4": ("square", "4", "Nova Bright 4", ("turn",)),
+    "nova8": ("square", "8", "Nova Bright 8", ("turn",)),
     "ak12": ("square", "12", "Akoya Bright 12", ("mass",)),
     "artisan": ("square", "12", "Artisan Flat 12", ("light",)),
 }
 
 KEY = [
-    ("Тёмное", "dark", ["nova8", "ak4"]),
-    ("Поворот", "turn", ["nova4"]),
+    ("Тёмное", "dark", ["golden", "ak4"]),
+    ("Поворот", "turn", ["nova8"]),
     ("Масса", "mass", ["ak12"]),
     ("Свет", "light", ["artisan"]),
 ]
 
-# step, brush, (x, y) in reference pixels (904×1024)
+# step, brush, (x, y) in reference pixels (904×1024). Step 1 is the evening tone, not on the head.
 MARKS = [
-    (1, "nova8", (110, 480)),
-    (1, "nova8", (800, 180)),
-    (2, "ak4", (360, 410)),
-    (2, "ak4", (450, 290)),
-    (2, "ak4", (430, 600)),
-    (2, "ak4", (660, 390)),
-    (3, "nova4", (390, 340)),
-    (3, "nova4", (500, 260)),
-    (3, "nova4", (410, 480)),
-    (4, "ak12", (560, 450)),
-    (4, "ak12", (500, 730)),
-    (4, "ak12", (470, 870)),
-    (5, "artisan", (400, 150)),
-    (5, "artisan", (520, 180)),
+    (2, "golden", (110, 480)),
+    (2, "golden", (800, 180)),
+    (3, "ak4", (360, 410)),
+    (3, "ak4", (450, 290)),
+    (3, "ak4", (430, 600)),
+    (3, "ak4", (660, 390)),
+    (4, "nova8", (390, 340)),
+    (4, "nova8", (500, 260)),
+    (4, "nova8", (410, 480)),
+    (5, "ak12", (560, 450)),
+    (5, "ak12", (500, 730)),
+    (5, "ak12", (470, 870)),
+    (6, "artisan", (400, 150)),
+    (6, "artisan", (520, 180)),
 ]
 
 R = 62
@@ -149,6 +149,6 @@ for col, (title, fam, ids) in enumerate(KEY):
         d = ImageDraw.Draw(img)
         d.text((cx + 54, cy), name, font=f_keyl, fill=(236, 230, 218), anchor="lm")
 
-out = os.path.join(HERE, "brush-map-1.jpg")
+out = os.path.join(HERE, "brush-map-2.jpg")
 img.save(out, quality=90)
 print(out, img.size)
