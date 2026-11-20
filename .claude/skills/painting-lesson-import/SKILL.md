@@ -292,6 +292,38 @@ The wheel is one synced block, whose original sits on the Notion card «🎨 О�
 </columns>
 ```
 
+### 5.3. Light zones on a portrait
+
+When the work is a head or a portrait, draw a light-zone map before the brush map. The brush map says which brush; this one says what the light is doing. Do not draw the letters on the brush map.
+
+Read the reference from disk and sample it. Never place a zone from memory or from a description of the picture.
+
+An arrow in the empty ground shows where the light comes from, one arrow per source that actually lights a plane. A fill that only lifts the whole shadow is not a second arrow. The legend states the direction in words (above, and from which side).
+
+Each zone that is really there gets one letter, on the zone, not on every facet:
+
+| Letter | Zone |
+|---|---|
+| Б | блик |
+| С | свет |
+| П | полусвет |
+| Т | собственная тень |
+| Р | рефлекс |
+| Пд | падающая тень |
+
+Пд is the only two-letter mark: П is полусвет.
+
+- **Б** only on a facet about half a value lighter than the surrounding свет. On a matte head an even light has no separate блик. Do not invent a shine. Leave Б off the head, keep it in the legend, and say there is no separate pile.
+- **С** on planes facing the source.
+- **П** on planes still in the light but turned, between С and the terminator.
+- **Т** on planes that do not face the source: the shadow side, and the down-facing pockets (socket, under the nose, under the jaw, inside the ear). Т is the form's own shadow.
+- **Пд** only where one form throws shadow on another: the brow into the socket, the nose onto the lip, the lip onto the chin, the jaw onto the neck, the neck onto the pedestal. A dark plane of the form itself is Т. The empty dark background is not a cast shadow.
+- **Р** only inside a shadow, where that shadow is lighter because it faces a lit surface. Name the surface. A black ground often gives no reflex. Do not mark a flat shadow side, and do not borrow a colour from a lighting diagram. If the face has none, say so.
+
+The plate colour only separates the letters. It is not the paint. One letter per typical zone. The map follows the photo, not the pile list: piles may be fewer than zones. On the card, say which pile paints which letter.
+
+The map is the first image on the card, full width, above the brush map and the palette, so the letters survive Notion's column. Legend under the picture, in Russian. New filename each revision (`light-zones-1.jpg`, then `-2`): Notion caches the URL. Read the JPEG from disk and fix letters that sit on the wrong plane or on each other before committing.
+
 ### 6. Verification against frames
 
 Once images are in hand, re-check the whole text. What usually turns out different:

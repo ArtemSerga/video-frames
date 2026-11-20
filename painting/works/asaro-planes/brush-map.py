@@ -49,21 +49,22 @@ KEY = [
 ]
 
 # step, brush, (x, y) in reference pixels (904×1024). Step 1 is the evening tone, not on the head.
+# Light is above and from the front-left. The lit cheek is step 6; the shadow cheek is step 4.
 MARKS = [
     (2, "golden", (110, 480)),
     (2, "golden", (800, 180)),
-    (3, "ak4", (360, 410)),
-    (3, "ak4", (450, 290)),
-    (3, "ak4", (430, 600)),
-    (3, "ak4", (660, 390)),
-    (4, "nova8", (390, 340)),
-    (4, "nova8", (500, 260)),
-    (4, "nova8", (410, 480)),
-    (5, "ak12", (560, 450)),
-    (5, "ak12", (500, 730)),
-    (5, "ak12", (470, 870)),
-    (6, "artisan", (400, 150)),
-    (6, "artisan", (520, 180)),
+    (3, "ak4", (400, 280)),
+    (3, "ak4", (270, 485)),
+    (3, "ak4", (410, 605)),
+    (3, "ak4", (660, 295)),
+    (4, "nova8", (360, 235)),
+    (4, "nova8", (540, 420)),
+    (5, "ak12", (560, 190)),
+    (5, "ak12", (460, 740)),
+    (5, "ak12", (430, 870)),
+    (6, "artisan", (380, 145)),
+    (6, "artisan", (340, 370)),
+    (6, "artisan", (300, 560)),
 ]
 
 R = 62
@@ -149,6 +150,6 @@ for col, (title, fam, ids) in enumerate(KEY):
         d = ImageDraw.Draw(img)
         d.text((cx + 54, cy), name, font=f_keyl, fill=(236, 230, 218), anchor="lm")
 
-out = os.path.join(HERE, "brush-map-2.jpg")
+out = os.path.join(HERE, "brush-map-3.jpg")
 img.save(out, quality=90)
 print(out, img.size)
